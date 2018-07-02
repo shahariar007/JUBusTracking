@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">JU Transport Tracking</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <string name="error_internet_connection">Internet is not available. Please check your internet connection or try again later!</string>
+    <string name="use_id_hint">User ID</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="mobile_number_hint">Mobile No</string>
+    <string name="btn_login">Login</string>
+
+    <string name="userid_validation_error">User Id can not be blank.</string>
+    <string name="password_validation_error">Password can not be blank.</string>
+    <string name="confirm_password_validation_error">Confirm password can not be blank.</string>
+    <string name="password_mismatch_error">Password are not same.</string>
+    <string name="password_min_max_length">Password must have minimum 4 and maximum 20 characters.</string>
+    <string name="mobile_no_validation_error">Mobile number is not valid.</string>
+
+    <string name="login_error">Wrong Username or Password.Please try again!</string>
+
+    <string name="login">Login</string>
+    <string name="login_success_msg">Successfully Login </string>
+    <string name="login_failed_msg">Login failed! </string>
+
+    <string name="header_login">JU Transport Management </string>
+    <string name="title_user_registration">Registration </string>
+
+    <string name="link_register">Not one of us ? Register now</string>
+    <string name="btn_register">Register</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <string name="password_min_length">4</string>
+    <string name="password_max_length">20</string>
+    <string name="No.events.found">No.events.found</string>
+
+
+    <string name="record_available_msg">No record is available</string>
+
+    <string name="action_settings">settings</string>
+
+    <string name="no_geocoder_available">No geocoder available</string>
+
+    <string name="fetch_address">Fetch address</string>
+
+    <string name="address_found">Address found</string>
+
+    <string name="no_address_found">Sorry, no address found</string>
+    <string name="no_location_data_provided">No location date provided</string>
+    <string name="service_not_available">Sorry, the service is not available</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
+
+    <string name="add_new_task">Add New Task</string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="title_activity_route_details">RouteDetailsActivity</string>
+
+    <string name="distance_time">Distance &amp; Time</string>
+
+    <string name="MAP_API_KEY">AIzaSyABV4iMRNv5oLuve0mZIv6zs0E4PolSQzk</string>
+    <string name="notification">Notification</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="openDrawer">open_drawer</string>
+    <string name="closeDrawer">close_drawer</string>
+
+</resources>
