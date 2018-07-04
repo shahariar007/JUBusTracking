@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -175,7 +176,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(ds != null)
+            ds.dispose();
     }
+
 
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
@@ -304,15 +308,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    Disposable ds;
     private void getBusLocation(int id) {
 
         final CustomProgressDialog progressDialog = UI.show(MainActivity.this);
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         Log.e("SCHE_ID::", id + "");
-        apiServices.getBusLocationBySchedule(token, id).delay(2, TimeUnit.SECONDS).repeat().observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
+
+        apiServices.getBusLocationBySchedule(token, id).delay(30, TimeUnit.SECONDS).repeat().observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
             @Override
             public void onSubscribe(Disposable d) {
 
+
+                ds = d;
             }
 
             @Override
@@ -323,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
                         RouteSchedule route = routeScheduleResponseWrapperObject.getData();
-                        Log.e(TAG, route.getDeviceId() + "::" + route.getLatitude() + "::" + route.getLongitude());
+                        Log.e(TAG, route.getDeviceId() +  "::" + route.getLongitude());
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
                         TempData.CURRENT_TRANSPORT_LOC = address;

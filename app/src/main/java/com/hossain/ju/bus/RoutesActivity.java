@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hossain.ju.bus.db.DbAdapter;
@@ -55,6 +56,7 @@ public class RoutesActivity extends AppCompatActivity {
     List<Schedule> listOfSubRoute;
     ListView listViewOfBottomSheet;
     BottomSheetBehavior sheetBehavior;
+    TextView txtSchTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,8 @@ public class RoutesActivity extends AppCompatActivity {
         ));
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(linearLayout);
+        txtSchTitle = linearLayout.findViewById(R.id.txtSchTitle);
+        txtSchTitle.setText("hffygedf");
         sheetBehavior.setPeekHeight(0);
 
         sheetBehavior.setHideable(true);
@@ -127,6 +131,7 @@ public class RoutesActivity extends AppCompatActivity {
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         sheetBehavior.setHideable(false);
+        txtSchTitle.setText(routeList.get(position).getName());
         generateList(routeList.get(position).getSchedule());
     }
 

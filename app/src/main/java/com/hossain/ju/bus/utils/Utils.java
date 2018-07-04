@@ -169,7 +169,7 @@ public class Utils {
 	}
 
 	public static String getAppVersion(Context context) {
-		String str = "JU Transport Management V: ";
+		String str = "Hossain V: ";
 		try {
 			str += context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
 		} catch (Exception e) {
