@@ -31,11 +31,11 @@ public interface APIServices {
 
     @GET("user")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<Response<User>> getUserInfo(@Header("Authorization") String auth);
+    Call<ResponseWrapperObject<User>> getUserInfo(@Header("Authorization") String auth);
 
     @POST("user")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<Response<User>> editUser(@Header("Authorization") String auth, @Body User user);
+    Call<ResponseWrapperObject<User>> editUser(@Header("Authorization") String auth, @Body User user);
 
 
     @GET("get-all-routes")

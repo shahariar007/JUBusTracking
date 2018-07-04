@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.goka.blurredgridmenu.BlurredGridMenuConfig;
 import com.goka.blurredgridmenu.GridMenu;
 import com.goka.blurredgridmenu.GridMenuFragment;
+import com.hossain.ju.bus.menuActivity.MenuHolderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,17 +61,32 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
+                Intent intent = new Intent(MenuActivity.this, MenuHolderActivity.class);
                 switch (id) {
-                    case R.id.account:
-                        Toast.makeText(MenuActivity.this, "My Account", Toast.LENGTH_SHORT).show();
-                    case R.id.settings:
-                        Toast.makeText(MenuActivity.this, "Settings", Toast.LENGTH_SHORT).show();
-                    case R.id.mycart:
-                        Toast.makeText(MenuActivity.this, "My Cart", Toast.LENGTH_SHORT).show();
-                    default:
-                        toggle();
-                        return true;
+                    case R.id.change_profile_picture:
+                        intent.putExtra("position", 0);
+                        intent.putExtra("title", "Change Profile Picture");
+                        break;
+                    case R.id.edit_profile:
+                        intent.putExtra("position", 1);
+                        intent.putExtra("title", "Edit Profile");
+                        break;
+                    case R.id.change_password:
+                        intent.putExtra("position", 2);
+                        intent.putExtra("title", "Change Password");
+                        break;
+                    case R.id.privacy:
+                        intent.putExtra("position", 3);
+                        intent.putExtra("title", "Privacy");
+                        break;
+                    case R.id.logout:
+                        intent.putExtra("position", 4);
+                        intent.putExtra("title", "Logout");
+                        break;
                 }
+                toggle();
+                startActivity(intent);
+                return true;
             }
         });
         //makeBlurConfig();

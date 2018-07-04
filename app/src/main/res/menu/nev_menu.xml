@@ -2,16 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/account"
-        android:icon="@drawable/ic_action_bus"
-        android:title="My Account" />
+        android:id="@+id/change_profile_picture"
+        android:icon="@drawable/ic_account_box_black_24dp"
+        android:title="Change Profile Picture" />
     <item
-        android:id="@+id/settings"
-        android:icon="@drawable/ic_vpn_key_black_24dp"
-        android:title="Settings" />
+        android:id="@+id/edit_profile"
+        android:icon="@drawable/ic_art_track_black_24dp"
+        android:title="Edit Profile" />
     <item
-        android:id="@+id/mycart"
-        android:icon="@drawable/user_icon"
-        android:title="My Cart" />
+        android:id="@+id/change_password"
+        android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:title="Change Password"
+         />
+    <item
+        android:id="@+id/privacy"
+        android:icon="@drawable/ic_copyright_black_24dp"
+        android:title="Privacy"
+         />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:title="Logout"
+         />
 
 </menu>

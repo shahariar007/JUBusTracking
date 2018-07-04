@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/map"
                         android:padding="3dp"
-                        android:text="Square Center, Wireless gate, Dhaka-1212"
+                        android:text="Location searching..."
                         android:textColor="@color/myTextPrimaryColor"
                         android:textSize="14sp" />
 

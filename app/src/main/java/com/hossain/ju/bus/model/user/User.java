@@ -39,9 +39,15 @@ public class User {
     @SerializedName("deleted_at")
     @Expose
     private Object deletedAt;
-    @SerializedName("image")
+    @SerializedName("user_info")
     @Expose
-    private String image;
+    private UserInfo userInfo;
+    @SerializedName("department_name")
+    @Expose
+    private String departmentName;
+    @SerializedName("hall_name")
+    @Expose
+    private String hallName;
     @SerializedName("student_info")
     @Expose
     private StudentInfo studentInfo;
@@ -134,12 +140,28 @@ public class User {
         this.deletedAt = deletedAt;
     }
 
-    public String getImage() {
-        return image;
+    public UserInfo getUserInfo() {
+        return userInfo;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public String getHallName() {
+        return hallName;
+    }
+
+    public void setHallName(String hallName) {
+        this.hallName = hallName;
     }
 
     public StudentInfo getStudentInfo() {

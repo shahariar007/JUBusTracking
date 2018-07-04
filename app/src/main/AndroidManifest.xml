@@ -56,7 +56,8 @@
 
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".NotificationActivity"></activity>
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".menuActivity.MenuHolderActivity"></activity>
     </application>
 
 </manifest>

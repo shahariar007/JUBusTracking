@@ -69,6 +69,12 @@ public class StudentInfo {
     @SerializedName("deleted_at")
     @Expose
     private Object deletedAt;
+    @SerializedName("department")
+    @Expose
+    private Department_ department;
+    @SerializedName("hall")
+    @Expose
+    private Hall_ hall;
 
     public Integer getId() {
         return id;
@@ -236,6 +242,22 @@ public class StudentInfo {
 
     public void setDeletedAt(Object deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public Department_ getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department_ department) {
+        this.department = department;
+    }
+
+    public Hall_ getHall() {
+        return hall;
+    }
+
+    public void setHall(Hall_ hall) {
+        this.hall = hall;
     }
 
 }
