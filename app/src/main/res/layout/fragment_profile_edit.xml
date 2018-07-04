@@ -21,16 +21,67 @@
                 android:layout_height="wrap_content">
 
                 <android.support.v7.widget.CardView
+                    android:id="@+id/imageCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <ImageView
-                        android:id="@+id/image_layout"
+                        android:id="@+id/imageProfile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="200dp"
                         android:src="@drawable/user_icon" />
                 </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageCardView"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/userName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user name" />
+
+                    <TextView
+                        android:id="@+id/userEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user Email" />
+
+                    <TextView
+                        android:id="@+id/userPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user Phone" />
+
+                    <TextView
+                        android:id="@+id/userGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user Gender" />
+
+                    <TextView
+                        android:id="@+id/userStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user status" />
+
+                    <TextView
+                        android:id="@+id/userDepartment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user Department" />
+
+                    <TextView
+                        android:id="@+id/userHall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="user Hall" />
+
+                </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
