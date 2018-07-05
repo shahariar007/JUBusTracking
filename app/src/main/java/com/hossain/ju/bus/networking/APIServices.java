@@ -11,7 +11,6 @@ import java.util.HashMap;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -31,7 +30,7 @@ public interface APIServices {
 
     @GET("user")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<ResponseWrapperObject<User>> getUserInfo(@Header("Authorization") String auth);
+    Call<User> getUserInfo(@Header("Authorization") String auth);
 
     @POST("user")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})

@@ -50,10 +50,10 @@ public class UserInfo {
     private Object nationalId;
     @SerializedName("emergency_contact")
     @Expose
-    private Object emergencyContact;
+    private String emergencyContact;
     @SerializedName("address")
     @Expose
-    private Object address;
+    private String address;
     @SerializedName("status")
     @Expose
     private String status;
@@ -188,19 +188,19 @@ public class UserInfo {
         this.nationalId = nationalId;
     }
 
-    public Object getEmergencyContact() {
+    public String getEmergencyContact() {
         return emergencyContact;
     }
 
-    public void setEmergencyContact(Object emergencyContact) {
+    public void setEmergencyContact(String emergencyContact) {
         this.emergencyContact = emergencyContact;
     }
 
-    public Object getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Object address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 

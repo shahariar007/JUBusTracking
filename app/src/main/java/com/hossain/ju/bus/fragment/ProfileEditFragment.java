@@ -9,13 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.model.user.User;
 import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
-import com.hossain.ju.bus.networking.ResponseWrapperObject;
 import com.hossain.ju.bus.utils.CustomProgressDialog;
 import com.hossain.ju.bus.utils.Utils;
 import com.hossain.ju.bus.views.UI;
@@ -42,7 +43,8 @@ public class ProfileEditFragment extends Fragment {
     private String mParam2;
     Context mContext;
     APIServices apiServices;
-
+    TextView userName, userEmail, userPhone, userDepartment, userAddress, userHall, userEmergencyContact;
+    ImageView imageProfile;
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -74,7 +76,7 @@ public class ProfileEditFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mContext = getActivity();
-        apiServices = APIClient.getInstance().create(APIServices.class);
+
     }
 
     @Override
@@ -82,7 +84,8 @@ public class ProfileEditFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile_edit, container, false);
-
+        init(view);
+        apiServices = APIClient.getInstance().create(APIServices.class);
         return view;
     }
 
@@ -96,19 +99,24 @@ public class ProfileEditFragment extends Fragment {
         final CustomProgressDialog progressDialog = UI.show(mContext);
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         Log.e("Token::", token);
-        Call<ResponseWrapperObject<User>> response = apiServices.getUserInfo(token);
+        Call<User> response = apiServices.getUserInfo(token);
 
-        response.enqueue(new Callback<ResponseWrapperObject<User>>() {
+        response.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<ResponseWrapperObject<User>> call, Response<ResponseWrapperObject<User>> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 progressDialog.dismissAllowingStateLoss();
                 Log.e(TAG, response.toString());
-
+                Log.e("FFFF:FF", response.body().getName());
+                try {
+                    setProfileData(response.body());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
 
             @Override
-            public void onFailure(Call<ResponseWrapperObject<User>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 // there is more than just a failing request (like: no internet connection)
                 progressDialog.dismissAllowingStateLoss();
                 Log.e(TAG, t.getMessage() + "");
@@ -118,11 +126,26 @@ public class ProfileEditFragment extends Fragment {
 
     }
 
-    public void setProfileData(User profileData) {
-
+    public void setProfileData(User profileData) throws Exception {
+        userName.setText(profileData.getName());
+        userEmail.setText(profileData.getEmail());
+        userPhone.setText(profileData.getUserInfo().getPhone());
+        userDepartment.setText(profileData.getUserInfo().getDepartment().getName());
+        userAddress.setText(profileData.getUserInfo().getAddress());
+        userHall.setText(profileData.getUserInfo().getEmergencyContact());
+        userEmergencyContact.setText(profileData.getName());
+        // imageProfile
     }
 
     public void init(View view) {
 
+        userName = (TextView) view.findViewById(R.id.userName);
+        userEmail = (TextView) view.findViewById(R.id.userEmail);
+        userPhone = (TextView) view.findViewById(R.id.userPhone);
+        userDepartment = (TextView) view.findViewById(R.id.userDepartment);
+        userAddress = (TextView) view.findViewById(R.id.userAddress);
+        userHall = (TextView) view.findViewById(R.id.userHall);
+        userEmergencyContact = (TextView) view.findViewById(R.id.userEmergencyContact);
+        imageProfile = (ImageView) view.findViewById(R.id.imageProfile);
     }
 }
