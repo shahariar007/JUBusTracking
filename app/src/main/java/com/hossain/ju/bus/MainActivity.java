@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,8 +31,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.location.GetDataFromUrl;
+import com.hossain.ju.bus.location.GetDirections;
+import com.hossain.ju.bus.location.LocationListener;
 import com.hossain.ju.bus.location.LocationUpdateIntentService;
 import com.hossain.ju.bus.location.LocationUtils;
 import com.hossain.ju.bus.model.DistanceDisplayModel;
@@ -42,20 +52,27 @@ import com.hossain.ju.bus.utils.TempData;
 import com.hossain.ju.bus.utils.Utils;
 import com.hossain.ju.bus.views.UI;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private static final String TAG = "MainActivity";
+
     public static final int REQ_PERMISSIONS_REQUEST = 5;
 
     private AddressResultReceiver mResultReceiver;
@@ -75,11 +92,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private TextView txtBusLocation, txtDistance;
     private GoogleMap gMap;
-    /**
-     * Visible while the address is being fetched.
-     */
-    private ProgressBar mProgressBar;
+    Disposable ds;
 
+    private ProgressBar mProgressBar;
+    int i = 0;
+
+    List<LatLng> latLngList;
+
+    ArrayList<LatLng> points = null;
+    PolylineOptions lineOptions = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +113,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         txtBusLocation = (TextView) findViewById(R.id.txtBusLocation);
         txtDistance = (TextView) findViewById(R.id.txtDistance);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        listView = (ListView) findViewById(R.id.listDistanceDisplay);
 
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(MainActivity.this);
         startIntentService();
 
         getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
-        setDistanceDisplay();
+
+        //setDistanceDisplay();
     }
 
     public void setDistanceDisplay() {
@@ -138,27 +159,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onResume() {
-
-
-        // getBusLocation();
-//
-//        if(gMap != null){
-//            gMap.clear();
-//
-//            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_action_bus);
-//
-//            LatLng latLng;
-//            if(TempData.CURRENT_TRANSPORT_LOC != null){
-//                latLng = new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE);
-//            }else{
-//                latLng = new LatLng(23.777176, 90.399452);
-//            }
-//
-//            gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
-//            float zoomLevel = (float) 18.0;
-//            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
-//        }
-
         super.onResume();
     }
 
@@ -170,16 +170,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onStop() {
         super.onStop();
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(ds != null)
+        if (ds != null)
             ds.dispose();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (ds != null)
+            ds.dispose();
+    }
 
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
@@ -193,37 +198,100 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startService(intent);
     }
 
-    /**
-     * Runs when user clicks the Fetch Address button.
-     */
-
-
     @Override
     public void onLowMemory() {
         super.onLowMemory();
 
     }
 
+    private Marker mMarkerA;
+    private Marker mMarkerB;
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_action_bus);
-
-        LatLng latLng;
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_action_bus);
+        LatLng latLng, latLng2;
         if (TempData.CURRENT_TRANSPORT_LOC != null) {
             latLng = new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE);
         } else {
             latLng = new LatLng(23.777176, 90.399452);
         }
 
-        gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
-        float zoomLevel = (float) 18.0;
+        if (TempData.CURRENT_USER_LOC != null) {
+            latLng2 = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
+        } else {
+            latLng2 = new LatLng(24.777176, 90.399452);
+        }
+
+        mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
+
+        mMarkerB = gMap.addMarker(new MarkerOptions().position(latLng2).title(TempData.CURRENT_USER_LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+
+        //gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
+        float zoomLevel = (float) 12.0f;
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        gMap.setMyLocationEnabled(true);
+        gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        gMap.getUiSettings().setZoomControlsEnabled(true);
+        gMap.getUiSettings().setAllGesturesEnabled(true);
 
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    @Override
+    public void onFail() {
+        Log.i(TAG, "Failed to get directions from Google...");
+
+    }
+
+
+    @Override
+    public void onSuccessfullRouteFetch(final List<List<HashMap<String, String>>> result) {
+
+        //if it takes a long time, we will do it in a seperate thread...
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                MarkerOptions markerOptions = new MarkerOptions();
+
+                for (List<HashMap<String, String>> path : result) {
+                    points = new ArrayList<LatLng>();
+                    lineOptions = new PolylineOptions();
+                    // Get all the points for this route
+                    for (HashMap<String, String> point : path) {
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
+                        points.add(position);
+                    }
+
+                    // Adding all the points in the route to LineOptions
+                    lineOptions.addAll(points);
+                    lineOptions.width(5);
+                    lineOptions.color(Color.RED);
+                }
+
+                //Do all UI operations on the UI thread only...
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Drawing polyline in the Google Map for the this route
+                        gMap.addPolyline(lineOptions);
+                    }
+                });
+
+            }
+        }).start();
 
     }
 
@@ -258,23 +326,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             TempData.USER_LAT = location.getLatitude();
             TempData.USER_LONG = location.getLongitude();
             updateWidget(mAddressOutput, TempData.USER_LAT, TempData.USER_LONG);
-
+            Log.e(TAG, "onReceiveResult: " + TempData.USER_LAT + " " + TempData.USER_LONG);
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 Utils.toast(mContext, getString(R.string.address_found));
 
-                txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE))));
+                //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE))));
             }
-
         }
     }
 
-    private void showSnackbar(final String text) {
-        View container = findViewById(android.R.id.content);
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
-        }
-    }
 
     /**
      * Shows a {@link Snackbar}.
@@ -303,35 +364,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private void updateWidget(String address, double lat, double longitude) {
-        txtBusLocation.setText(address);
-        Utils.toast(mContext, "LAT:" + lat + " LONG: " + longitude);
+        // txtBusLocation.setText(address);
+        // Utils.toast(mContext, "LAT:" + lat + " LONG: " + longitude);
     }
 
 
-    Disposable ds;
     private void getBusLocation(int id) {
 
         final CustomProgressDialog progressDialog = UI.show(MainActivity.this);
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         Log.e("SCHE_ID::", id + "");
 
-        apiServices.getBusLocationBySchedule(token, id).delay(30, TimeUnit.SECONDS).repeat().observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
+        apiServices.getBusLocationBySchedule(token, id).repeatWhen(new Function<Observable<Object>, ObservableSource<?>>() {
+            @Override
+            public ObservableSource<?> apply(Observable<Object> objectObservable) throws Exception {
+                Log.d(TAG, "apply: " + i);
+                return objectObservable.delay(Utils.REQUEST_DELAY, TimeUnit.SECONDS);
+            }
+        }).repeat().observeOn(AndroidSchedulers.mainThread()).timeout(50, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
             @Override
             public void onSubscribe(Disposable d) {
-
-
                 ds = d;
             }
 
             @Override
             public void onNext(ResponseWrapperObject<RouteSchedule> routeScheduleResponseWrapperObject) {
-                progressDialog.dismissAllowingStateLoss();
-                Log.d("TXXXXX","HIT");
+
+                Log.e("TXXXXX", "HIT");
                 try {
 
                     if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
                         RouteSchedule route = routeScheduleResponseWrapperObject.getData();
-                        Log.e(TAG, route.getDeviceId() +  "::" + route.getLongitude());
+                        DecimalFormat df = new DecimalFormat("##.000000");
+                        Log.e("DATA:", "" + route.getLongitude() + ":" + df.format(new BigDecimal(route.getLongitude()).doubleValue()));
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
                         TempData.CURRENT_TRANSPORT_LOC = address;
@@ -340,13 +405,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         txtBusLocation.setText(address);
 
                         double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
-                        Log.e(TAG, "DIStance::" + distance);
-                        txtDistance.setText("" + Utils.round(distance));
+                        // Log.e(TAG, "DIStance::" + distance);
+                        txtDistance.setText("" + Utils.round(distance) + " Km");
 
-                        mapFragment.getMapAsync((OnMapReadyCallback) mContext);
+                        // Getting URL to the Google Directions API
+
+                        LatLng dest = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
+                        LatLng origin = new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE);
+
+                        try {
+
+                            Log.e(TAG, "onNext: " + TempData.USER_LAT + " " + TempData.USER_LONG);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // refresh marker
+                        mMarkerA.setPosition(origin);
+                        mMarkerB.setPosition(dest);
+
+                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
+                        GetDirections getDirections = new GetDirections(MainActivity.this);
+                        getDirections.startGettingDirections(url);
+                        progressDialog.dismissAllowingStateLoss();
+
+
                     }
                 } catch (Exception e) {
                     e.getStackTrace();
+                    // Log.e(TAG,e.getMessage());
                 }
             }
 
@@ -358,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onComplete() {
-                Log.d("TXXXXX","HIT");
+                Log.d("TXXXXX", "HIT");
                 Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
             }
         });
@@ -423,6 +509,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+
+    final int MAP_BOUND_PADDING = 180;  /* In dp */
+
+    // Draw polyline on map
+    public void drawPolyLineOnMap(List<LatLng> list) {
+        PolylineOptions polyOptions = new PolylineOptions();
+        polyOptions.color(Color.RED);
+        polyOptions.width(5);
+        polyOptions.addAll(list);
+
+        gMap.clear();
+        gMap.addPolyline(polyOptions);
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : list) {
+            builder.include(latLng);
+        }
+
+        final LatLngBounds bounds = builder.build();
+
+        //BOUND_PADDING is an int to specify padding of bound.. try 100.
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_BOUND_PADDING);
+        gMap.animateCamera(cu);
     }
 
 }
