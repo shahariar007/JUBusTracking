@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e(TAG, "onReceiveResult: " + TempData.USER_LAT + " " + TempData.USER_LONG);
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                Utils.toast(mContext, getString(R.string.address_found));
+              //  Utils.toast(mContext, getString(R.string.address_found));
 
                 //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE))));
             }

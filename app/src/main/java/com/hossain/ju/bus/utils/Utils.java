@@ -45,6 +45,9 @@ public class Utils {
 	public final static String BEARER                             = "Bearer ";
 
 	public final static String SCHEDULE_ID                             = "SCHEDULE_ID ";
+	public final static int  REQUEST_DELAY                             = 30;
+
+
 
 	public Utils(Context context){
 		pDialog = new ProgressDialog(context);

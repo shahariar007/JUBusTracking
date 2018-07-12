@@ -73,7 +73,7 @@ public class RouteViewAdapter extends RecyclerView.Adapter<RouteViewAdapter.Rout
             drawable.setColorFilter(Color.parseColor(colorCode[k]), PorterDuff.Mode.MULTIPLY);
             i = k;
             //Log.d("TAGO", "k=" + k + "i=" + i);
-            if (favList.contains(route.getId())) {
+            if (favList != null && favList.size() > 0 && favList.contains(route.getId())) {
                 holder.imgFav.setImageResource(R.drawable.favorite_heart_button);
                 holder.imgFav.setTag(1);
             } else {

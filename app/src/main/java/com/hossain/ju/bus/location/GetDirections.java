@@ -9,9 +9,9 @@ import java.util.List;
 
 public class GetDirections {
 
-    Listener listener;
+    LocationListener listener;
 
-    public GetDirections(Listener listener) {
+    public GetDirections(LocationListener listener) {
         this.listener = listener;
     }
 

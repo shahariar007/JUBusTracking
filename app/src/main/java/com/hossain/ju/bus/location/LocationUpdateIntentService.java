@@ -51,7 +51,7 @@ public class LocationUpdateIntentService extends Service implements
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000 * 1 * 2 ;// 1 sec
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000 * 1 * 10 ;// 10 sec
 
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
@@ -76,6 +76,7 @@ public class LocationUpdateIntentService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent != null && intent.hasExtra(Constants.RECEIVER))
         mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
         if (isGooglePlayServicesAvailable()) {
             initLocationManager();
@@ -141,7 +142,7 @@ public class LocationUpdateIntentService extends Service implements
              // checkExternalMedia();
             // writeToSDFile(mCurrentLocation);
             String address = LocationUtils.getAddress(this,mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
-            Utils.toast(this,"Current address: "+ address);
+            //Utils.toast(this,"Current address: "+ address);
             //insertBusLocations(mCurrentLocation,(int) Utils.getBatteryLevel(this));
 
             deliverResultToReceiver(Constants.SUCCESS_RESULT, address,mCurrentLocation);
@@ -301,7 +302,7 @@ public class LocationUpdateIntentService extends Service implements
 
     private void updateLocation(Location location){
         mCurrentLocation = location;
-       // Log.e(TAG, "LAT:"+mCurrentLocation.getLatitude()+":: "+"Longitude:"+mCurrentLocation.getLongitude());
+        Log.e(TAG, "LAT:"+mCurrentLocation.getLatitude()+":: "+"Longitude:"+mCurrentLocation.getLongitude());
 
     }
 

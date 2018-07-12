@@ -23,10 +23,10 @@ public class RouteSchedule {
     private String deviceTimezone;
     @SerializedName("latitude")
     @Expose
-    private Float latitude;
+    private String latitude;
     @SerializedName("longitude")
     @Expose
-    private Float longitude;
+    private String longitude;
     @SerializedName("altitude")
     @Expose
     private Object altitude;
@@ -92,19 +92,19 @@ public class RouteSchedule {
         this.deviceTimezone = deviceTimezone;
     }
 
-    public Float getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 

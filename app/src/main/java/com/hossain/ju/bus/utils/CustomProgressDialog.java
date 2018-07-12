@@ -31,7 +31,7 @@ public class CustomProgressDialog extends android.app.DialogFragment {
        // cubeGrid.setColor(getResources().getColor(R.color.progressbarColor,null));
         progressBar.setIndeterminateDrawable(cubeGrid);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        setCancelable(false);
+        setCancelable(true);
         getDialog().setCanceledOnTouchOutside(false);
         return view;
     }
