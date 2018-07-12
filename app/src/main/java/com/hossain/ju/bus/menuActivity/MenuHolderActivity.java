@@ -5,9 +5,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.hossain.ju.bus.R;
+import com.hossain.ju.bus.fragment.ChangePasswordFragment;
 import com.hossain.ju.bus.fragment.ProfileEditFragment;
 
 import java.util.HashMap;
@@ -52,10 +54,10 @@ public class MenuHolderActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 onBackPressed();
-                break;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public void setFragmentGenerator(int position) {
@@ -69,7 +71,7 @@ public class MenuHolderActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
                 break;
             case 2:
-                fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
+                fragmentTransaction.replace(R.id.fragment, ChangePasswordFragment.newInstance("", ""));
                 break;
             case 3:
                 fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
@@ -82,4 +84,10 @@ public class MenuHolderActivity extends AppCompatActivity {
         fragmentTransaction.commitAllowingStateLoss();
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
 }

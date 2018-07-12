@@ -7,9 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hossain.ju.bus.R;
@@ -46,6 +53,12 @@ public class ProfileEditFragment extends Fragment {
     TextView userName, userEmail, userPhone, userDepartment, userAddress, userHall, userEmergencyContact;
     ImageView imageProfile;
 
+    LinearLayout userShowLayout, userEditLayout;
+    private Animation animationFadeOut, animationFadeIn;
+    Button saveButton, cancelButton;
+    Menu menu;
+    boolean callStatus = true;
+
     public ProfileEditFragment() {
         // Required empty public constructor
     }
@@ -76,6 +89,10 @@ public class ProfileEditFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mContext = getActivity();
+        setHasOptionsMenu(true);
+        animationFadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
+        animationFadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
+
 
     }
 
@@ -93,6 +110,18 @@ public class ProfileEditFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setUserList();
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                userShowLayout.setVisibility(View.VISIBLE);
+                userShowLayout.startAnimation(animationFadeIn);
+
+                userEditLayout.startAnimation(animationFadeOut);
+                userEditLayout.setVisibility(View.GONE);
+                menu.getItem(0).setIcon(R.drawable.ic_edit_black_24dp);
+            }
+        });
     }
 
     private void setUserList() {
@@ -147,5 +176,49 @@ public class ProfileEditFragment extends Fragment {
         userHall = (TextView) view.findViewById(R.id.userHall);
         userEmergencyContact = (TextView) view.findViewById(R.id.userEmergencyContact);
         imageProfile = (ImageView) view.findViewById(R.id.imageProfile);
+        userShowLayout = (LinearLayout) view.findViewById(R.id.userShowLayout);
+        userEditLayout = (LinearLayout) view.findViewById(R.id.userEditLayout);
+        saveButton = (Button) view.findViewById(R.id.save);
+        cancelButton = (Button) view.findViewById(R.id.cancel);
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_menu, menu);
+        this.menu = menu;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.edit_profile_menu: {
+                if (callStatus) {
+                    callStatus = false;
+                    userShowLayout.startAnimation(animationFadeOut);
+                    userShowLayout.setVisibility(View.GONE);
+                    userEditLayout.setVisibility(View.VISIBLE);
+                    userEditLayout.startAnimation(animationFadeIn);
+                    menu.getItem(0).setIcon(R.drawable.ic_clear_black_24dp);
+                } else {
+                    callStatus = true;
+                    userShowLayout.setVisibility(View.VISIBLE);
+                    userShowLayout.startAnimation(animationFadeIn);
+
+                    userEditLayout.startAnimation(animationFadeOut);
+                    userEditLayout.setVisibility(View.GONE);
+                    menu.getItem(0).setIcon(R.drawable.ic_edit_black_24dp);
+                }
+
+            }
+        }
+        return false;
     }
 }
