@@ -64,7 +64,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -329,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e(TAG, "onReceiveResult: " + TempData.USER_LAT + " " + TempData.USER_LONG);
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-              //  Utils.toast(mContext, getString(R.string.address_found));
+                //  Utils.toast(mContext, getString(R.string.address_found));
 
                 //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE))));
             }
@@ -427,8 +426,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         GetDirections getDirections = new GetDirections(MainActivity.this);
                         getDirections.startGettingDirections(url);
                         progressDialog.dismissAllowingStateLoss();
-
-
                     }
                 } catch (Exception e) {
                     e.getStackTrace();
