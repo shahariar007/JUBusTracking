@@ -142,7 +142,19 @@
                         android:layout_marginTop="10dip"
                         android:text="@string/btn_login" />
 
-                    <!-- Link to Registration Screen -->
+                    <!-- Link to forgot pass  -->
+
+                    <TextView
+                        android:id="@+id/txtForgotPass"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dip"
+                        android:padding="5dp"
+                        android:text="@string/forgot_password_link"
+                        android:textSize="18sp"
+                        android:gravity="center"
+                        android:textColor="@color/actionbar_color"
+                        />
 
 
                     <!-- Link to Registration Screen -->

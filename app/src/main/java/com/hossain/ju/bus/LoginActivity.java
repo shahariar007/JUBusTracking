@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -61,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         apiServices = APIClient.getInstance().create(APIServices.class);
         setContentView(R.layout.login);
         initialization();
+
 
         final RelativeLayout llLogin = (RelativeLayout)findViewById(R.id.loginLayout);
         llLogin.setOnTouchListener(new View.OnTouchListener() {
@@ -195,6 +197,11 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin =  (Button) findViewById(R.id.btnLogin);
         rememberMe = (CheckBox) findViewById(R.id.rememberMe);
         versionInfo = (TextView) findViewById(R.id.versionInfo);
+
+        TextView t2 = (TextView) findViewById(R.id.txtForgotPass);
+        t2.setMovementMethod(LinkMovementMethod.getInstance());
+
+
         SharedPreferencesHelper.setISLogin(mContext,"0");
 
         if(!SharedPreferencesHelper.getLastUserId(this).equals("")) {

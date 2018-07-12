@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hossain.ju.bus.MenuActivity;
+import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -44,8 +46,10 @@ public class Utils {
 	public final static String PASSWORD                             = "1234";
 	public final static String BEARER                             = "Bearer ";
 
-	public final static String SCHEDULE_ID                             = "SCHEDULE_ID ";
-	public final static int  REQUEST_DELAY                             = 30;
+	public final static String SCHEDULE_ID                         = "SCHEDULE_ID ";
+	public final static int  REQUEST_DELAY                         = 30;
+
+	public final static String RESET_PASSWORD_URL              = "https://gps.zists.com/password/reset";
 
 
 
@@ -270,6 +274,39 @@ public class Utils {
 		DecimalFormat formatter = new DecimalFormat("#0.00");
 		System.out.println("round val:: " + formatter.format(value));
 		return formatter.format(value);
+	}
+
+	public static boolean logout(final Context mcContext){
+
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mcContext);
+		alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+		alertDialog.setTitle("BUS Tracking");
+		alertDialog.setMessage("Do you want to logout?");
+		alertDialog.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+				//MenuActivity.this.finish();
+
+				if(SharedPreferencesHelper.getLastUserId(mcContext) != null){
+					SharedPreferencesHelper.setLastUserID(mcContext ,"");
+					SharedPreferencesHelper.setLastPassword(mcContext ,"");
+					SharedPreferencesHelper.setPass(mcContext ,"");
+					SharedPreferencesHelper.setISLogin(mcContext ,"0");
+					SharedPreferencesHelper.setToken(mcContext ,"");
+				}
+			}
+		});
+
+		alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int whichButton) {
+
+			}
+		});
+
+		alertDialog.show();
+
+		return  true;
 	}
 
 

@@ -23,7 +23,7 @@ public class APIClient {
     public static Retrofit getInstance() {
         if (retrofit == null) {
             final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build();

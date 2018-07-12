@@ -32,6 +32,7 @@ import com.goka.blurredgridmenu.BlurredGridMenuConfig;
 import com.goka.blurredgridmenu.GridMenu;
 import com.goka.blurredgridmenu.GridMenuFragment;
 import com.hossain.ju.bus.menuActivity.MenuHolderActivity;
+import com.hossain.ju.bus.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +44,13 @@ public class MenuActivity extends AppCompatActivity {
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        mContext =  this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Log.e("TAG:", "Called2.");
@@ -89,37 +92,17 @@ public class MenuActivity extends AppCompatActivity {
                 return true;
             }
         });
-        //makeBlurConfig();
 
-//        mGridMenuFragment = GridMenuFragment.newInstance(R.drawable.ju_bg);
-//        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-//        tx.replace(R.id.main_frame, mGridMenuFragment);
-//        tx.addToBackStack(null);
-//        tx.commit();
-
-        //setupGridMenu();
-
-//        mGridMenuFragment.setOnClickMenuListener(new GridMenuFragment.OnClickMenuListener() {
-//            @Override
-//            public void onClickMenu(GridMenu gridMenu, int position) {
-//                Toast.makeText(MenuActivity.this, "Title:" + gridMenu.getTitle() + ", Position:" + position,
-//                        Toast.LENGTH_SHORT).show();
-//
-//                if (position == 1) {
-//                    Intent intent = new Intent(MenuActivity.this, RoutesActivity.class);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
         gridView = (GridView) findViewById(R.id.gridView);
         GridAdapter gridAdapter = new GridAdapter(setupGridMenu(), this);
         gridView.setAdapter(gridAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                Toast.makeText(MenuActivity.this, "position:=" + position, Toast.LENGTH_SHORT).show();
+                                                //Toast.makeText(MenuActivity.this, "position:=" + position, Toast.LENGTH_SHORT).show();
                                                 switch (position) {
                                                     case 0:
+                                                        Utils.toast(mContext,"Upcoming....");
                                                         break;
                                                     case 1:
                                                         Intent intent = new Intent(MenuActivity.this, RoutesActivity.class);
@@ -127,16 +110,17 @@ public class MenuActivity extends AppCompatActivity {
                                                         startActivity(intent);
                                                         break;
                                                     case 2:
+                                                        Utils.toast(mContext,"Upcoming....");
                                                         break;
                                                     case 3:
+                                                        Utils.toast(mContext,"Upcoming....");
                                                         break;
                                                     case 4:
                                                         Intent intent1 = new Intent(MenuActivity.this, RoutesActivity.class);
                                                         intent1.putExtra("fav", true);
                                                         startActivity(intent1);
                                                         break;
-                                                    case 5:
-                                                        break;
+
                                                 }
                                             }
                                         }
@@ -159,7 +143,7 @@ public class MenuActivity extends AppCompatActivity {
         menus.add(new GridMenu("Routes", R.drawable.route_1));
         menus.add(new GridMenu("Stops", R.drawable.bus_stop_1));
         menus.add(new GridMenu("Traffic", R.drawable.traffic_1));
-        menus.add(new GridMenu("Favorite Route", R.drawable.traffic_1));
+        menus.add(new GridMenu("Favorite Route", R.drawable.ic_menu_favourite_list_1));
         return menus;
     }
 

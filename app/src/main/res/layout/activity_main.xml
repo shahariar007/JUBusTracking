@@ -54,7 +54,7 @@
                     android:layout_marginBottom="3dp"
                     android:background="@color/White"
                     android:orientation="vertical"
-                    android:padding="5dp">
+                    android:padding="5dp"  >
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -78,30 +78,38 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:layout_marginBottom="5dp">
 
-                        >
+                        <View android:id="@+id/dummy"
+                            android:layout_height="0dp"
+                            android:layout_width="0dp"
+                            android:layout_centerInParent="true"/>
 
                         <TextView
                             android:id="@+id/txtLocation"
+                            android:layout_alignRight="@id/dummy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="left"
                             android:padding="3dp"
                             android:text="Distance Away: "
-                            android:textColor="@color/myTextPrimaryColor"
-                            android:textSize="20sp" />
+                            android:textColor="@color/actionbar_color"
+                            android:textSize="20sp"
+                            android:layout_alignParentLeft="true"/>
 
                         <TextView
                             android:id="@+id/txtDistance"
+                            android:layout_alignLeft="@id/dummy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
                             android:padding="3dp"
-                            android:text="0 Km "
-                            android:textColor="@color/actionbar_color"
+                            android:text=""
+                            android:textColor="@color/myTextPrimaryColor"
                             android:textSize="14sp"
                             android:layout_toRightOf="@+id/txtLocation"
-
+                            android:layout_alignParentRight="true"
                             />
 
 

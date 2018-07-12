@@ -38,7 +38,7 @@ public interface APIServices {
 
     @POST("logout")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<ResponseWrapperObject<User>> logout(@Header("Authorization") String auth);
+    Call<ResponseBody>   logout(@Header("Authorization") String auth);
 
     @GET("get-all-routes")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
