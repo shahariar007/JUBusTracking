@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.model.user.User;
 import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
 import com.hossain.ju.bus.networking.ResponseWrapperObject;
@@ -37,6 +38,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.hossain.ju.bus.utils.Utils.TAG;
+
 
 /**
  * A login screen that offers login via username/password.
@@ -53,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView link_to_register,versionInfo;
     private ProgressDialog pDialog;
     private APIServices apiServices;
+
+    private String name;
 
 
     @Override
@@ -220,11 +225,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-        Log.e("TAG:","Called.");
-        Intent intent = new Intent(mContext, MenuActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
+
+        getProfileInfo();
+
     }
 
     private void saveLoginInfo(String loginId, String password) {
@@ -269,5 +272,49 @@ public class LoginActivity extends AppCompatActivity {
         return valid;
     }
 
+
+    private void getProfileInfo() {
+        String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
+        Log.e("Token::", token);
+        Call<User> response = apiServices.getUserInfo(token);
+
+        response.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+
+                Log.e(TAG, response.toString());
+                Log.e("FFFF:FF", response.body().getName());
+                try {
+
+                    setName(response.body().getName().toString());
+                    Log.e("TAG:","Called3."+getName());
+                    Intent intent = new Intent(mContext, MenuActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("NAME",getName());
+                    startActivity(intent);
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+                Log.e(TAG, t.getMessage() + "");
+                Utils.toast(mContext, "data Failed!");
+            }
+        });
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 

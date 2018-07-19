@@ -31,11 +31,21 @@ import android.widget.Toast;
 import com.goka.blurredgridmenu.BlurredGridMenuConfig;
 import com.goka.blurredgridmenu.GridMenu;
 import com.goka.blurredgridmenu.GridMenuFragment;
+import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.menuActivity.MenuHolderActivity;
+import com.hossain.ju.bus.model.user.User;
+import com.hossain.ju.bus.utils.CustomProgressDialog;
 import com.hossain.ju.bus.utils.Utils;
+import com.hossain.ju.bus.views.UI;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.hossain.ju.bus.utils.Utils.TAG;
 
 
 public class MenuActivity extends AppCompatActivity {
@@ -46,6 +56,7 @@ public class MenuActivity extends AppCompatActivity {
     private NavigationView nv;
     private Context mContext;
 
+     String profileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +66,18 @@ public class MenuActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Log.e("TAG:", "Called2.");
 
+
+
         dl = (DrawerLayout) findViewById(R.id.activity_main);
+
         t = new ActionBarDrawerToggle(this, dl, R.string.openDrawer, R.string.closeDrawer);
         dl.addDrawerListener(t);
         t.syncState();
         nv = (NavigationView) findViewById(R.id.nv);
+        View v  =  nv.getHeaderView(0);
+        TextView name = (TextView) v.findViewById(R.id.txtProfileName);
+       name.setText( getIntent().getStringExtra("NAME"));
+
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -236,5 +254,8 @@ public class MenuActivity extends AppCompatActivity {
             return v;
         }
     }
+
+
+
 
 }

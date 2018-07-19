@@ -2,9 +2,13 @@ package com.hossain.ju.bus.fragment;
 
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,6 +56,7 @@ public class ProfileEditFragment extends Fragment {
     Context mContext;
     APIServices apiServices;
     TextView userName, userEmail, userPhone, userDepartment, userAddress, userHall, userEmergencyContact;
+    EditText edtName, edtPhone, edtAddress,edtEmrgContact;
     ImageView imageProfile;
 
     LinearLayout userShowLayout, userEditLayout;
@@ -58,6 +64,9 @@ public class ProfileEditFragment extends Fragment {
     Button saveButton, cancelButton;
     Menu menu;
     boolean callStatus = true;
+
+    User userProfile;
+    SpannableStringBuilder spannableStringBuilder;
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -92,6 +101,19 @@ public class ProfileEditFragment extends Fragment {
         setHasOptionsMenu(true);
         animationFadeOut = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out);
         animationFadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
+        //Get the defined errorColor from color resource.
+        int errorColor;
+        final int version = Build.VERSION.SDK_INT;
+        if (version >= 23) {
+            errorColor = ContextCompat.getColor(mContext, R.color.errorColor);
+        } else {
+            errorColor = getResources().getColor(R.color.errorColor);
+        }
+
+        String errorString = "This field cannot be empty";  // Your custom error message.
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(errorColor);
+         spannableStringBuilder = new SpannableStringBuilder(errorString);
+        spannableStringBuilder.setSpan(foregroundColorSpan, 0, errorString.length(), 0);
 
 
     }
@@ -134,12 +156,15 @@ public class ProfileEditFragment extends Fragment {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 progressDialog.dismissAllowingStateLoss();
-                Log.e(TAG, response.toString());
-                Log.e("FFFF:FF", response.body().getName());
-                try {
-                    setProfileData(response.body());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(response != null  ){
+                    Log.e(TAG, response.toString());
+                    Log.e("FFFF:FF", response.body().getName());
+                    try {
+                        userProfile = response.body();
+                        setProfileData(response.body());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -166,6 +191,19 @@ public class ProfileEditFragment extends Fragment {
         // imageProfile
     }
 
+    public void setProfileData(User profileData, LinearLayout layout) throws Exception {
+        Log.e("phone::",profileData.getUserInfo().getPhone());
+        ((EditText)layout.findViewById(R.id.userEditName)).setText(profileData.getName().toString());
+        ((EditText)layout.findViewById(R.id.userEditPhone)).setText(profileData.getUserInfo().getPhone().toString());
+        ((EditText)layout.findViewById(R.id.userEditAddress)).setText(profileData.getUserInfo().getAddress());
+        ((EditText)layout.findViewById(R.id.userEditEmergencyContact)).setText(profileData.getUserInfo().getEmergencyContact().toString());
+
+
+        //userHall.setText(profileData.getUserInfo().getEmergencyContact());
+        //userEmergencyContact.setText(profileData.getName());
+        // imageProfile
+    }
+
     public void init(View view) {
 
         userName = (TextView) view.findViewById(R.id.userName);
@@ -180,6 +218,25 @@ public class ProfileEditFragment extends Fragment {
         userEditLayout = (LinearLayout) view.findViewById(R.id.userEditLayout);
         saveButton = (Button) view.findViewById(R.id.save);
         cancelButton = (Button) view.findViewById(R.id.cancel);
+
+
+        edtName = userEditLayout.findViewById(R.id.userEditName);
+        edtPhone = userEditLayout.findViewById(R.id.userEditPhone);
+        edtAddress =     userEditLayout.findViewById(R.id.userEditAddress);
+        edtEmrgContact = userEditLayout.findViewById(R.id.userEditEmergencyContact);
+
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(Utils.profileFormValidation(mContext,spannableStringBuilder,edtName,edtPhone,edtAddress,edtEmrgContact)){
+
+                }
+
+
+            }
+        });
 
     }
 
@@ -207,6 +264,13 @@ public class ProfileEditFragment extends Fragment {
                     userEditLayout.setVisibility(View.VISIBLE);
                     userEditLayout.startAnimation(animationFadeIn);
                     menu.getItem(0).setIcon(R.drawable.ic_clear_black_24dp);
+                    try {
+                        setProfileData( userProfile,userEditLayout);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                 } else {
                     callStatus = true;
                     userShowLayout.setVisibility(View.VISIBLE);

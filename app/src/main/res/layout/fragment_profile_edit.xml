@@ -223,9 +223,10 @@
                                 android:background="@null"
                                 android:drawableRight="@drawable/ic_account_box_black_24dp"
                                 android:gravity="center_vertical"
-                                android:hint="user name"
+                                android:hint="Name"
                                 android:minHeight="50dp"
-                                android:padding="8dp" />
+                                android:padding="8dp"
+                                android:textColor="@color/myTextPrimaryColor"/>
                         </android.support.design.widget.TextInputLayout>
                     </android.support.v7.widget.CardView>
 
@@ -248,7 +249,8 @@
                                 android:gravity="center_vertical"
                                 android:hint="user Phone"
                                 android:minHeight="50dp"
-                                android:padding="8dp" />
+                                android:padding="8dp"
+                                android:textColor="@color/myTextPrimaryColor"/>
                         </android.support.design.widget.TextInputLayout>
                     </android.support.v7.widget.CardView>
 
@@ -272,7 +274,8 @@
                                 android:hint="user Address"
                                 android:lines="4"
                                 android:minHeight="50dp"
-                                android:padding="8dp" />
+                                android:padding="8dp"
+                                android:textColor="@color/myTextPrimaryColor"/>
                         </android.support.design.widget.TextInputLayout>
                     </android.support.v7.widget.CardView>
 
@@ -295,7 +298,8 @@
                                 android:gravity="center_vertical"
                                 android:hint="user Emergency Contact"
                                 android:minHeight="50dp"
-                                android:padding="8dp" />
+                                android:padding="8dp"
+                                android:textColor="@color/myTextPrimaryColor"/>
                         </android.support.design.widget.TextInputLayout>
                     </android.support.v7.widget.CardView>
 

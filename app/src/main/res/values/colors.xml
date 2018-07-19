@@ -176,4 +176,6 @@
     <color name="card_color_background">#eceaea</color>
     <color name="hint_color">#00B3A4</color>
 
+    <color name="errorColor">@color/Red</color>
+
 </resources>

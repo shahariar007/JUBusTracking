@@ -13,17 +13,20 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.google.android.gms.maps.model.LatLng;
 import com.hossain.ju.bus.MenuActivity;
+import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 
 import java.lang.reflect.Field;
@@ -310,5 +313,30 @@ public class Utils {
 	}
 
 
+	public static boolean profileFormValidation(Context context, SpannableStringBuilder spannableStringBuilder, EditText edtName, EditText edtPhone , EditText edtAddress, EditText edtEmrgContact) {
+		if (edtName.getText().toString().equals("")) {
+			//AlertMessage.showMessage(context, context.getString(R.string.btn_login), context.getString(R.string.userid_validation_error));
+			//edtName.setError(context.getString(R.string.error_field_required));
+			edtName.setError(spannableStringBuilder);
+			edtName.requestFocus();
+			return false;
+		}
+		else if (edtPhone.getText().toString().equals("")) {
+			edtPhone.setError(spannableStringBuilder);
+			edtPhone.requestFocus();
+			return false;
+		} else if (edtAddress.getText().toString().equals("")) {
+			edtAddress.setError(spannableStringBuilder);
+			edtAddress.requestFocus();
+			return false;
+		}else if (edtEmrgContact.getText().toString().equals("")) {
+			edtEmrgContact.setError(spannableStringBuilder);
+			edtEmrgContact.requestFocus();
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 
 }
