@@ -16,12 +16,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.hossain.ju.bus.R;
+import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.networking.APIClient;
+import com.hossain.ju.bus.networking.APIServices;
+import com.hossain.ju.bus.utils.APIError;
 import com.hossain.ju.bus.utils.CircleTransform;
+import com.hossain.ju.bus.utils.CustomProgressDialog;
+import com.hossain.ju.bus.utils.ErrorUtils;
+import com.hossain.ju.bus.utils.Utils;
+import com.hossain.ju.bus.views.UI;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +54,7 @@ public class ProfilePictureChangeFragment extends Fragment {
     private String mParam2;
 
     ImageView imageButton, profilePicture;
+    private APIServices apiServices;
 
 
     public ProfilePictureChangeFragment() {
@@ -71,6 +86,7 @@ public class ProfilePictureChangeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        apiServices = APIClient.getInstance().create(APIServices.class);
     }
 
     @Override
@@ -105,7 +121,7 @@ public class ProfilePictureChangeFragment extends Fragment {
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
                             Picasso.get().load(selectedImage).transform(new CircleTransform()).into(profilePicture);
-                            imageToString(bitmap);
+                            setProfilePicture(imageToString(bitmap));
                         } catch (FileNotFoundException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -131,4 +147,49 @@ public class ProfilePictureChangeFragment extends Fragment {
         String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
         return imageEncoded;
     }
+
+    private void setProfilePicture(String data) {
+
+        final CustomProgressDialog progressDialog = UI.show(getActivity());
+        String token = Utils.BEARER + SharedPreferencesHelper.getToken(getActivity());
+        // Log.e("Token::",token);
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("userId", "");
+        stringStringHashMap.put("imageData", data);
+
+        Call<ResponseBody> response = apiServices.imageUpload(token, stringStringHashMap);
+
+        response.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                progressDialog.dismissAllowingStateLoss();
+                try {
+                    if (response != null && response.isSuccessful()) {
+
+                    } else {
+                        // parse the response body …
+                        try {
+                            APIError error = ErrorUtils.parseError(response);
+                            if (error != null)
+                                Utils.toast(getActivity(), error.message());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // there is more than just a failing request (like: no internet connection)
+                progressDialog.dismissAllowingStateLoss();
+
+                Utils.toast(getActivity(), "data Failed!");
+            }
+        });
+
+    }
+
 }

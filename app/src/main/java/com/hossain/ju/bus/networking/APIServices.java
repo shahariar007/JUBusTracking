@@ -38,7 +38,7 @@ public interface APIServices {
 
     @POST("logout")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<ResponseBody>   logout(@Header("Authorization") String auth);
+    Call<ResponseBody> logout(@Header("Authorization") String auth);
 
     @GET("get-all-routes")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
@@ -57,5 +57,8 @@ public interface APIServices {
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
     Call<ResponseWrapperArray<Notice>> getAllNotification(@Header("Authorization") String auth);
 
+    @POST("image")
+    @Headers({"app-type: consumer-app", "Content-Type: application/json"})
+    Call<ResponseBody> imageUpload(@Header("Authorization") String auth, @Body HashMap<String, String> map);
 
 }
