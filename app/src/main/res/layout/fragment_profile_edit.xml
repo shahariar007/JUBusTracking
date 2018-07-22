@@ -79,6 +79,7 @@
 
                         <TextView
                             android:id="@+id/userName"
+                            android:background="#FFFFFF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:drawableRight="@drawable/ic_account_box_black_24dp"
@@ -94,6 +95,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -110,6 +112,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -126,6 +129,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userDepartment"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -142,6 +146,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userAddress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -159,6 +164,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userHall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -175,6 +181,7 @@
                         android:layout_margin="8dp">
 
                         <TextView
+                            android:background="#FFFFFF"
                             android:id="@+id/userEmergencyContact"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -214,13 +221,14 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
                             android:textColorHint="@color/hint_color">
 
                             <android.support.design.widget.TextInputEditText
                                 android:id="@+id/userEditName"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@null"
+                                android:background="#FFFFFF"
                                 android:drawableRight="@drawable/ic_account_box_black_24dp"
                                 android:gravity="center_vertical"
                                 android:hint="Name"
@@ -238,13 +246,14 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
                             android:textColorHint="@color/hint_color">
 
                             <android.support.design.widget.TextInputEditText
                                 android:id="@+id/userEditPhone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@null"
+                                android:background="#FFFFFF"
                                 android:drawableRight="@drawable/ic_phone_iphone_black_48dp"
                                 android:gravity="center_vertical"
                                 android:hint="user Phone"
@@ -262,13 +271,14 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
                             android:textColorHint="@color/hint_color">
 
                             <android.support.design.widget.TextInputEditText
                                 android:id="@+id/userEditAddress"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@null"
+                                android:background="#FFFFFF"
                                 android:drawableRight="@drawable/ic_add_location_black_48dp"
                                 android:gravity="center_vertical"
                                 android:hint="user Address"
@@ -287,13 +297,14 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
                             android:textColorHint="@color/hint_color">
 
                             <android.support.design.widget.TextInputEditText
                                 android:id="@+id/userEditEmergencyContact"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@null"
+                                android:background="#FFFFFF"
                                 android:drawableRight="@drawable/ic_phone_iphone_black_48dp"
                                 android:gravity="center_vertical"
                                 android:hint="user Emergency Contact"

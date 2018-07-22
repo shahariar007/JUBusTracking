@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.fragment.ChangePasswordFragment;
 import com.hossain.ju.bus.fragment.ProfileEditFragment;
+import com.hossain.ju.bus.fragment.ProfilePictureChangeFragment;
 
 import java.util.HashMap;
 
@@ -65,7 +66,7 @@ public class MenuHolderActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (position) {
             case 0:
-                fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
+                fragmentTransaction.replace(R.id.fragment, ProfilePictureChangeFragment.newInstance("", ""));
                 break;
             case 1:
                 fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
