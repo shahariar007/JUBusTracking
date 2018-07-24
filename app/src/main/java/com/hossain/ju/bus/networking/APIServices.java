@@ -34,7 +34,7 @@ public interface APIServices {
 
     @POST("user")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<ResponseWrapperObject<User>> editUser(@Header("Authorization") String auth, @Body User user);
+    Call<ResponseWrapperObject<User>> editUser(@Header("Authorization") String auth, @Body HashMap<String, Object> body);
 
     @POST("update-password")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})

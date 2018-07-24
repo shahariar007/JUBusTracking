@@ -37,6 +37,8 @@ import com.hossain.ju.bus.utils.ErrorUtils;
 import com.hossain.ju.bus.utils.Utils;
 import com.hossain.ju.bus.views.UI;
 
+import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -301,7 +303,13 @@ public class ProfileEditFragment extends Fragment {
     private void setUserData(User user) {
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         final CustomProgressDialog progressDialog = UI.show(getActivity());
-        Call<ResponseWrapperObject<User>> response = apiServices.editUser(token, user);
+        HashMap<String, Object> inputs = new HashMap<>();
+        inputs.put("name", user.getUserInfo().getName());
+        inputs.put("phone", user.getUserInfo().getPhone());
+        inputs.put("address", user.getUserInfo().getAddress());
+        inputs.put("emergency_contact", user.getUserInfo().getEmergencyContact());
+
+        Call<ResponseWrapperObject<User>> response = apiServices.editUser(token, inputs);
 
         response.enqueue(new Callback<ResponseWrapperObject<User>>() {
             @Override

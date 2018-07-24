@@ -407,9 +407,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         TempData.LAST_LONGITUDE = Double.valueOf(route.getLongitude());
                         txtBusLocation.setText(address);
 
-                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
+                        //double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
                         // Log.e(TAG, "DIStance::" + distance);
-                        txtDistance.setText("" + Utils.round(distance) + " Km");
+                       // txtDistance.setText("" + Utils.round(distance) + " Km");
 
                         // Getting URL to the Google Directions API
 
