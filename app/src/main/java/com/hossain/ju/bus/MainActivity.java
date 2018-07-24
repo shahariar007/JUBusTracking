@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         mContext = this;
         setUpToolbar();
-        mResultReceiver = new AddressResultReceiver(null);
         apiServices = APIClient.getInstance().create(APIServices.class);
         txtBusLocation = (TextView) findViewById(R.id.txtBusLocation);
         txtDistance = (TextView) findViewById(R.id.txtDistance);
@@ -120,7 +119,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(MainActivity.this);
         startIntentService();
 
-        getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
+       if(Utils.isConnected(mContext)){
+           getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
+       }else{
+           Utils.toast(mContext,getString(R.string.error_internet_connection));
+       }
+
 
         //setDistanceDisplay();
     }
@@ -159,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
+        mResultReceiver = new AddressResultReceiver(new Handler());
+
     }
 
     @Override
@@ -315,8 +321,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (resultData == null) {
                 return;
             }
-
-            double precision = Math.pow(10, 6);
 
             // mAddressOutput      = resultData.getString(Constants.RESULT_DATA_KEY);
 

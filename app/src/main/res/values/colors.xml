@@ -170,8 +170,10 @@
 
     <color name="myPrimaryColor">#00c7b7</color>
     <color name="myPrimaryDarkColor">#00B3A4</color>
+    <color name="accentColor">#FFC107</color>
+
     <color name="myTextPrimaryColor">#313d3e</color>
-    <color name="myTextSecondaryColor">#ebecec</color>
+    <color name="myTextSecondaryColor">#757575</color>
     <color name="progressbarColor">#303F9F</color>
     <color name="card_color_background">#eceaea</color>
     <color name="hint_color">#00B3A4</color>

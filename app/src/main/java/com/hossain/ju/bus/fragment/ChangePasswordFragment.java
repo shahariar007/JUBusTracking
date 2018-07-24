@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.hossain.ju.bus.R;
+import com.hossain.ju.bus.networking.APIClient;
+import com.hossain.ju.bus.networking.APIServices;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +24,8 @@ import com.hossain.ju.bus.R;
  * create an instance of this fragment.
  */
 public class ChangePasswordFragment extends Fragment {
+
+    private static final String TAG = ChangePasswordFragment.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,7 +39,9 @@ public class ChangePasswordFragment extends Fragment {
     Button cancelButton, changeButton;
     private boolean A = false;
     private boolean B = false;
-    private static final String TAG = ChangePasswordFragment.class.getSimpleName();
+
+
+    APIServices apiServices;
 
     public ChangePasswordFragment() {
         // Required empty public constructor
@@ -78,6 +84,7 @@ public class ChangePasswordFragment extends Fragment {
         repeatPassword = (EditText) v.findViewById(R.id.repeatPassword);
         changeButton = (Button) v.findViewById(R.id.change_password);
         cancelButton = (Button) v.findViewById(R.id.cancel);
+        apiServices = APIClient.getInstance().create(APIServices.class);
         return v;
     }
 
@@ -145,7 +152,9 @@ public class ChangePasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (A && B) {
-                    Toast.makeText(getActivity(), "True", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getActivity(), "True", Toast.LENGTH_SHORT).show();
+
+
                 } else {
                     Toast.makeText(getActivity(), "A==" + A + "B==" + B, Toast.LENGTH_SHORT).show();
                 }

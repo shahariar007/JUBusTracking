@@ -69,7 +69,12 @@ public class RoutesActivity extends AppCompatActivity {
         setupToolbar();
         apiServices = APIClient.getInstance().create(APIServices.class);
 
-        populatesRoutes();
+        if (Utils.isConnected(mContext)) {
+            populatesRoutes();
+        }else {
+            Utils.toast(mContext, getString(R.string.error_internet_connection));
+        }
+
     }
 
     private void init() {
@@ -153,7 +158,10 @@ public class RoutesActivity extends AppCompatActivity {
         response.enqueue(new Callback<ResponseWrapperArray<Route>>() {
             @Override
             public void onResponse(Call<ResponseWrapperArray<Route>> call, Response<ResponseWrapperArray<Route>> response) {
-                progressDialog.dismissAllowingStateLoss();
+                if(progressDialog != null){
+                    progressDialog.dismissAllowingStateLoss();
+                }
+
                 Log.e(TAG, response.toString());
                 try {
                     if (response != null && response.isSuccessful()) {

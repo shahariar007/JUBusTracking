@@ -112,7 +112,7 @@ public class ProfileEditFragment extends Fragment {
 
         String errorString = "This field cannot be empty";  // Your custom error message.
         ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(errorColor);
-         spannableStringBuilder = new SpannableStringBuilder(errorString);
+        spannableStringBuilder = new SpannableStringBuilder(errorString);
         spannableStringBuilder.setSpan(foregroundColorSpan, 0, errorString.length(), 0);
 
 

@@ -179,7 +179,7 @@ public class Utils {
 	}
 
 	public static String getAppVersion(Context context) {
-		String str = "Hossain V: ";
+		String str = "TrackingApps V: ";
 		try {
 			str += context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
 		} catch (Exception e) {

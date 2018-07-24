@@ -77,17 +77,17 @@ public class LocationUpdateIntentService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent != null && intent.hasExtra(Constants.RECEIVER))
-        mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
-        if (isGooglePlayServicesAvailable()) {
-            initLocationManager();
-            buildGoogleApiClient();
-            mGoogleApiClient.connect();
-            Log.e(TAG,"mGoogleApiClient CALLED!!!!!!!!!!!!!");
-        }
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            Log.e(TAG,"mGoogleApiClient CALLED and connected!!!!!!!!!!!!!");
-            startLocationUpdates();
-        }
+            mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
+            if (isGooglePlayServicesAvailable()) {
+                initLocationManager();
+                buildGoogleApiClient();
+                mGoogleApiClient.connect();
+                Log.e(TAG,"mGoogleApiClient CALLED!!!!!!!!!!!!!");
+            }
+            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                Log.e(TAG,"mGoogleApiClient CALLED and connected!!!!!!!!!!!!!");
+                startLocationUpdates();
+            }
         return Service.START_STICKY;
     }
 
@@ -313,7 +313,13 @@ public class LocationUpdateIntentService extends Service implements
     private void deliverResultToReceiver(int resultCode, String message,Location mCurrentLocation) {
         Bundle bundle = new Bundle();
        // bundle.putString(Constants.RESULT_DATA_KEY, message);
-        bundle.putParcelable(Constants.CURRENT_LOCATION, mCurrentLocation);
-        mReceiver.send(resultCode, bundle);
+        if(mCurrentLocation != null){
+            bundle.putParcelable(Constants.CURRENT_LOCATION, mCurrentLocation);
+            if(mReceiver != null){
+                mReceiver.send(resultCode, bundle);
+            }else{
+                Log.d(TAG, "deliverResultToReceiver: "+mReceiver);
+            }
+        }
     }
 }

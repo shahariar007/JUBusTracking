@@ -36,6 +36,12 @@ public interface APIServices {
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
     Call<ResponseWrapperObject<User>> editUser(@Header("Authorization") String auth, @Body User user);
 
+    @POST("update-password")
+    @Headers({"app-type: consumer-app", "Content-Type: application/json"})
+    Call<ResponseWrapperObject<User>> changePassword(@Header("Authorization") String auth, @Body User user);
+
+
+
     @POST("logout")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
     Call<ResponseBody> logout(@Header("Authorization") String auth);
