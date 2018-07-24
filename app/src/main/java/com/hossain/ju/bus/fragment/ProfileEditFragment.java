@@ -315,10 +315,12 @@ public class ProfileEditFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseWrapperObject<User>> call, Response<ResponseWrapperObject<User>> response) {
                 progressDialog.dismissAllowingStateLoss();
-                //  Log.e(TAG,response.toString());
+
                 try {
                     if (response != null && response.isSuccessful()) {
-                        Toast.makeText(getActivity(), ""+response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), ""+response.body().getStatus(), Toast.LENGTH_SHORT).show();
+
+                        Utils.toast(mContext,"Profile update successfully!");
                     } else {
                         // parse the response body …
                         try {
