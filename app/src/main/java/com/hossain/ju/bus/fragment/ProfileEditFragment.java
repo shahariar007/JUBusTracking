@@ -319,6 +319,13 @@ public class ProfileEditFragment extends Fragment {
                 try {
                     if (response != null && response.isSuccessful()) {
                         //Toast.makeText(getActivity(), ""+response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                        userShowLayout.setVisibility(View.VISIBLE);
+                        userShowLayout.startAnimation(animationFadeIn);
+
+                        userEditLayout.startAnimation(animationFadeOut);
+                        userEditLayout.setVisibility(View.GONE);
+                        menu.getItem(0).setIcon(R.drawable.ic_edit_black_24dp);
+                        setUserList();
 
                         Utils.toast(mContext,"Profile update successfully!");
                     } else {
