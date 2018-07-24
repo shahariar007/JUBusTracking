@@ -38,7 +38,7 @@ public interface APIServices {
 
     @POST("update-password")
     @Headers({"app-type: consumer-app", "Content-Type: application/json"})
-    Call<ResponseWrapperObject<User>> changePassword(@Header("Authorization") String auth, @Body User user);
+    Call<ResponseBody> changePassword(@Header("Authorization") String auth, @Body HashMap<String,String> map );
 
 
 

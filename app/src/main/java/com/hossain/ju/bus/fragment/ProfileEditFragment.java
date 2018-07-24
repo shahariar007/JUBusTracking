@@ -23,13 +23,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.model.user.User;
 import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
+import com.hossain.ju.bus.networking.ResponseWrapperObject;
+import com.hossain.ju.bus.utils.APIError;
 import com.hossain.ju.bus.utils.CustomProgressDialog;
+import com.hossain.ju.bus.utils.ErrorUtils;
 import com.hossain.ju.bus.utils.Utils;
 import com.hossain.ju.bus.views.UI;
 
@@ -56,7 +60,7 @@ public class ProfileEditFragment extends Fragment {
     Context mContext;
     APIServices apiServices;
     TextView userName, userEmail, userPhone, userDepartment, userAddress, userHall, userEmergencyContact;
-    EditText edtName, edtPhone, edtAddress,edtEmrgContact;
+    EditText edtName, edtPhone, edtAddress, edtEmrgContact;
     ImageView imageProfile;
 
     LinearLayout userShowLayout, userEditLayout;
@@ -67,6 +71,7 @@ public class ProfileEditFragment extends Fragment {
 
     User userProfile;
     SpannableStringBuilder spannableStringBuilder;
+    User user = null;
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -156,7 +161,7 @@ public class ProfileEditFragment extends Fragment {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 progressDialog.dismissAllowingStateLoss();
-                if(response != null  ){
+                if (response != null) {
                     Log.e(TAG, response.toString());
                     Log.e("FFFF:FF", response.body().getName());
                     try {
@@ -181,6 +186,7 @@ public class ProfileEditFragment extends Fragment {
     }
 
     public void setProfileData(User profileData) throws Exception {
+        this.user = profileData;
         userName.setText(profileData.getName());
         userEmail.setText(profileData.getEmail());
         userPhone.setText(profileData.getUserInfo().getPhone());
@@ -192,11 +198,11 @@ public class ProfileEditFragment extends Fragment {
     }
 
     public void setProfileData(User profileData, LinearLayout layout) throws Exception {
-        Log.e("phone::",profileData.getUserInfo().getPhone());
-        ((EditText)layout.findViewById(R.id.userEditName)).setText(profileData.getName().toString());
-        ((EditText)layout.findViewById(R.id.userEditPhone)).setText(profileData.getUserInfo().getPhone().toString());
-        ((EditText)layout.findViewById(R.id.userEditAddress)).setText(profileData.getUserInfo().getAddress());
-        ((EditText)layout.findViewById(R.id.userEditEmergencyContact)).setText(profileData.getUserInfo().getEmergencyContact().toString());
+        Log.e("phone::", profileData.getUserInfo().getPhone());
+        ((EditText) layout.findViewById(R.id.userEditName)).setText(profileData.getName().toString());
+        ((EditText) layout.findViewById(R.id.userEditPhone)).setText(profileData.getUserInfo().getPhone().toString());
+        ((EditText) layout.findViewById(R.id.userEditAddress)).setText(profileData.getUserInfo().getAddress());
+        ((EditText) layout.findViewById(R.id.userEditEmergencyContact)).setText(profileData.getUserInfo().getEmergencyContact().toString());
 
 
         //userHall.setText(profileData.getUserInfo().getEmergencyContact());
@@ -222,7 +228,7 @@ public class ProfileEditFragment extends Fragment {
 
         edtName = userEditLayout.findViewById(R.id.userEditName);
         edtPhone = userEditLayout.findViewById(R.id.userEditPhone);
-        edtAddress =     userEditLayout.findViewById(R.id.userEditAddress);
+        edtAddress = userEditLayout.findViewById(R.id.userEditAddress);
         edtEmrgContact = userEditLayout.findViewById(R.id.userEditEmergencyContact);
 
 
@@ -230,8 +236,14 @@ public class ProfileEditFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if(Utils.profileFormValidation(mContext,spannableStringBuilder,edtName,edtPhone,edtAddress,edtEmrgContact)){
-
+                if (Utils.profileFormValidation(mContext, spannableStringBuilder, edtName, edtPhone, edtAddress, edtEmrgContact)) {
+                    if (user != null) {
+                        user.getUserInfo().setAddress(edtAddress.getText().toString());
+                        user.getUserInfo().setEmergencyContact(edtEmrgContact.getText().toString());
+                        user.getUserInfo().setName(edtName.getText().toString());
+                        user.getUserInfo().setPhone(edtPhone.getText().toString());
+                        setUserData(user);
+                    }
                 }
 
 
@@ -265,7 +277,7 @@ public class ProfileEditFragment extends Fragment {
                     userEditLayout.startAnimation(animationFadeIn);
                     menu.getItem(0).setIcon(R.drawable.ic_clear_black_24dp);
                     try {
-                        setProfileData( userProfile,userEditLayout);
+                        setProfileData(userProfile, userEditLayout);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -284,5 +296,48 @@ public class ProfileEditFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    private void setUserData(User user) {
+        String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
+        final CustomProgressDialog progressDialog = UI.show(getActivity());
+        Call<ResponseWrapperObject<User>> response = apiServices.editUser(token, user);
+
+        response.enqueue(new Callback<ResponseWrapperObject<User>>() {
+            @Override
+            public void onResponse(Call<ResponseWrapperObject<User>> call, Response<ResponseWrapperObject<User>> response) {
+                progressDialog.dismissAllowingStateLoss();
+                //  Log.e(TAG,response.toString());
+                try {
+                    if (response != null && response.isSuccessful()) {
+                        Toast.makeText(getActivity(), ""+response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        // parse the response body …
+                        try {
+                            APIError error = ErrorUtils.parseError(response);
+                            if (error != null)
+                                Log.e("Login error", "Code: " + response.code() + " Message: " + response.message());
+                            //Utils.toast(mContext,error.message());
+                            Utils.toast(mContext, " Failed!");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseWrapperObject<User>> call, Throwable t) {
+                // there is more than just a failing request (like: no internet connection)
+                progressDialog.dismissAllowingStateLoss();
+
+                t.printStackTrace();
+                Utils.toast(mContext, "Login Failed!");
+            }
+        });
+
     }
 }

@@ -1,6 +1,7 @@
 package com.hossain.ju.bus.fragment;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,8 +16,23 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.hossain.ju.bus.R;
+import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.model.user.User;
 import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
+import com.hossain.ju.bus.networking.ResponseWrapperObject;
+import com.hossain.ju.bus.utils.APIError;
+import com.hossain.ju.bus.utils.CustomProgressDialog;
+import com.hossain.ju.bus.utils.ErrorUtils;
+import com.hossain.ju.bus.utils.Utils;
+import com.hossain.ju.bus.views.UI;
+
+import java.util.HashMap;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -152,9 +168,11 @@ public class ChangePasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (A && B) {
-                   // Toast.makeText(getActivity(), "True", Toast.LENGTH_SHORT).show();
-
-
+                    HashMap<String,String> map=new HashMap<>();
+                    map.put("oldPass",oldPassword.getText().toString());
+                    map.put("newPass",newPassword.getText().toString());
+                    map.put("UserID", SharedPreferencesHelper.getLastUserId(getActivity()));
+                    setPassword(map);
                 } else {
                     Toast.makeText(getActivity(), "A==" + A + "B==" + B, Toast.LENGTH_SHORT).show();
                 }
@@ -166,5 +184,47 @@ public class ChangePasswordFragment extends Fragment {
                 getActivity().finish();
             }
         });
+    }
+    private void setPassword(HashMap<String,String> map) {
+        String token = Utils.BEARER + SharedPreferencesHelper.getToken(getActivity());
+        final CustomProgressDialog progressDialog = UI.show(getActivity());
+        Call<ResponseBody> response = apiServices.changePassword(token,map);
+
+        response.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                progressDialog.dismissAllowingStateLoss();
+                //  Log.e(TAG,response.toString());
+                try {
+                    if (response != null && response.isSuccessful()) {
+                        Toast.makeText(getActivity(), ""+response.body(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        // parse the response body …
+                        try {
+                            APIError error = ErrorUtils.parseError(response);
+                            if (error != null)
+                                Log.e("Login error", "Code: " + response.code() + " Message: " + response.message());
+                            //Utils.toast(mContext,error.message());
+                            Utils.toast(getContext(), "Login Failed!");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // there is more than just a failing request (like: no internet connection)
+                progressDialog.dismissAllowingStateLoss();
+                ;
+                t.printStackTrace();
+                Utils.toast(getActivity(), "Login Failed!");
+            }
+        });
+
     }
 }
