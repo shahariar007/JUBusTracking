@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hossain.ju.bus.LoginActivity;
 import com.hossain.ju.bus.MenuActivity;
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
@@ -296,6 +297,11 @@ public class Utils {
 					SharedPreferencesHelper.setISLogin(mcContext ,"0");
 					SharedPreferencesHelper.setToken(mcContext ,"");
 					((Activity)mcContext).finish();
+					Intent i = new Intent(mcContext,
+							LoginActivity.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+							Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					mcContext.startActivity( i);
 
 				}
 			}
