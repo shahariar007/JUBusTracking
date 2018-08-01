@@ -10,8 +10,11 @@ import android.view.MenuItem;
 
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.fragment.ChangePasswordFragment;
+import com.hossain.ju.bus.fragment.LogoutFragment;
+import com.hossain.ju.bus.fragment.PrivacyFragment;
 import com.hossain.ju.bus.fragment.ProfileEditFragment;
 import com.hossain.ju.bus.fragment.ProfilePictureChangeFragment;
+import com.hossain.ju.bus.utils.Utils;
 
 import java.util.HashMap;
 
@@ -75,10 +78,10 @@ public class MenuHolderActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.fragment, ChangePasswordFragment.newInstance("", ""));
                 break;
             case 3:
-                fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
+                fragmentTransaction.replace(R.id.fragment, PrivacyFragment.newInstance("", ""));
                 break;
             case 4:
-                fragmentTransaction.replace(R.id.fragment, ProfileEditFragment.newInstance("", ""));
+                fragmentTransaction.replace(R.id.fragment, LogoutFragment.newInstance("", ""));
                 break;
         }
         fragmentTransaction.disallowAddToBackStack();
