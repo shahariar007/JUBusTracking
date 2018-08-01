@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         apiServices = APIClient.getInstance().create(APIServices.class);
         setContentView(R.layout.login);
         initialization();
+       Utils.applyCustomFont(mContext,getWindow().getDecorView().getRootView());
+       // getWindow().getDecorView().getRootView();
 
 
         final RelativeLayout llLogin = (RelativeLayout)findViewById(R.id.loginLayout);

@@ -150,13 +150,13 @@ public class Utils {
 					Typeface customTypeface = textView.getTypeface();
 					if (customTypeface != null) {
 						if (customTypeface.getStyle() == Typeface.BOLD) {
-							customTypeface = Typeface.createFromAsset(context.getAssets(), "TitilliumWeb-SemiBold.ttf");
+							customTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/TitilliumWeb-SemiBold.ttf");
 						} else {
-							customTypeface = Typeface.createFromAsset(context.getAssets(), "TitilliumWeb-ExtraLight.ttf");
+							customTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/TitilliumWeb-ExtraLight.ttf");
 						}
 						textView.setTypeface(customTypeface);
 					} else {
-						customTypeface = Typeface.createFromAsset(context.getAssets(), "TitilliumWeb-ExtraLight.ttf");
+						customTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/TitilliumWeb-ExtraLight.ttf");
 						textView.setTypeface(customTypeface);
 					}
 				}
@@ -288,7 +288,6 @@ public class Utils {
 		alertDialog.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				//MenuActivity.this.finish();
 
 				if(SharedPreferencesHelper.getLastUserId(mcContext) != null){
 					SharedPreferencesHelper.setLastUserID(mcContext ,"");
@@ -296,6 +295,8 @@ public class Utils {
 					SharedPreferencesHelper.setPass(mcContext ,"");
 					SharedPreferencesHelper.setISLogin(mcContext ,"0");
 					SharedPreferencesHelper.setToken(mcContext ,"");
+					((Activity)mcContext).finish();
+
 				}
 			}
 		});

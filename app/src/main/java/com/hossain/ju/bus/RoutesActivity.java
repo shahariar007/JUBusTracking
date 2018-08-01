@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -289,6 +290,8 @@ public class RoutesActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.routes_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -297,6 +300,20 @@ public class RoutesActivity extends AppCompatActivity {
 
         if (item.getItemId() == android.R.id.home) {
             finish();
+        }
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Toast.makeText(this, "You have selected Bookmark Menu", Toast.LENGTH_SHORT).show();
+                return true;
+
+            case R.id.favourites_menu:
+                Intent intent = new Intent(this, RoutesActivity.class);
+                intent.putExtra("fav", false);
+                startActivity(intent);
+                return true;
+
+
         }
 
         return super.onOptionsItemSelected(item);

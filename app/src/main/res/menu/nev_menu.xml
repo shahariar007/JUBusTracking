@@ -3,25 +3,25 @@
 
     <item
         android:id="@+id/change_profile_picture"
-        android:icon="@drawable/ic_account_box_black_24dp"
+        android:icon="@drawable/ic_add_a_photo_black_24dp"
         android:title="Change Profile Picture" />
     <item
         android:id="@+id/edit_profile"
-        android:icon="@drawable/ic_art_track_black_24dp"
+        android:icon="@drawable/ic_profile_edit"
         android:title="Edit Profile" />
     <item
         android:id="@+id/change_password"
-        android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:icon="@drawable/ic_change_password"
         android:title="Change Password"
          />
     <item
         android:id="@+id/privacy"
-        android:icon="@drawable/ic_copyright_black_24dp"
+        android:icon="@android:drawable/ic_lock_lock"
         android:title="Privacy"
          />
     <item
         android:id="@+id/logout"
-        android:icon="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:icon="@android:drawable/ic_lock_power_off"
         android:title="Logout"
          />
 

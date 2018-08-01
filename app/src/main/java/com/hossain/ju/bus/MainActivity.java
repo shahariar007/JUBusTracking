@@ -426,9 +426,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         mMarkerA.setPosition(origin);
                         mMarkerB.setPosition(dest);
 
-                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
-                        GetDirections getDirections = new GetDirections(MainActivity.this);
-                        getDirections.startGettingDirections(url);
+//                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
+//                        GetDirections getDirections = new GetDirections(MainActivity.this);
+//                        getDirections.startGettingDirections(url);
                         progressDialog.dismissAllowingStateLoss();
                     }
                 } catch (Exception e) {
