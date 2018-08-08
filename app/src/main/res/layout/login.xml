@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/actionbar_color"
@@ -17,7 +16,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#FFFFFF"
+            app:cardBackgroundColor="@color/White"
             app:cardCornerRadius="20dp">
 
             <RelativeLayout
@@ -40,7 +39,7 @@
                     android:layout_marginTop="10dp"
                     android:orientation="vertical"
                     android:paddingBottom="5dip"
-                    android:paddingTop="5dip">        <!-- header Start -->
+                    android:paddingTop="5dip">
 
                     <ImageView
                         android:id="@+id/logo_id"
@@ -49,8 +48,6 @@
                         android:scaleType="fitXY"
                         android:src="@drawable/ju_logo" />
 
-
-                    <!-- header Ends -->
 
                 </LinearLayout>
 
@@ -120,46 +117,71 @@
                             android:textColorHint="@color/myTextPrimaryColor" />
                     </android.support.design.widget.TextInputLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
 
-                    <android.support.v7.widget.AppCompatCheckBox
-                        android:id="@+id/rememberMe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="-6dp"
-                        android:layout_marginTop="6dp"
-                        android:checked="false"
-                        android:text="Remember me"
-                        android:textColor="@color/counter_text_bg"
-                        android:textSize="14sp"
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:id="@+id/rememberMe"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-6dp"
+                    android:checked="false"
+                    android:text="@string/Remember_me"
+                    android:textColor="@color/myTextSecondaryColor"
+                    android:textSize="14sp"
+                    />
 
-                        />
+                <!-- Link to forgot pass  -->
+
+                <TextView
+                    android:id="@+id/txtForgotPass"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/forgot_password_link"
+                    android:textSize="14sp"
+                    android:gravity="right"
+                    android:textColor="@color/myTextPrimaryColor"
+                    />
+
+
+
+            </LinearLayout>
+
+
+
 
                     <!-- Login button -->
+
+
 
                     <Button
                         android:id="@+id/btnLogin"
                         style="@style/Button"
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dip"
-                        android:text="@string/btn_login" />
+                        android:text="@string/btn_login"
+                       />
 
-                    <!-- Link to forgot pass  -->
-
-                    <TextView
-                        android:id="@+id/txtForgotPass"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dip"
-                        android:padding="5dp"
-                        android:text="@string/forgot_password_link"
-                        android:textSize="18sp"
-                        android:gravity="center"
-                        android:textColor="@color/actionbar_color"
-                        />
 
 
                     <!-- Link to Registration Screen -->
+                    <TextView
+                        android:id="@+id/txtSignUp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dip"
+                        android:padding="5dp"
+                        android:text="@string/sign_up_link"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:textColor="@color/accentColor"
+                        />
+
                 </LinearLayout>
                 <!-- Login Form Ends -->
 

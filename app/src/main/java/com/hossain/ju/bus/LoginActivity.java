@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
@@ -205,8 +206,28 @@ public class LoginActivity extends AppCompatActivity {
         rememberMe = (CheckBox) findViewById(R.id.rememberMe);
         versionInfo = (TextView) findViewById(R.id.versionInfo);
 
-        TextView t2 = (TextView) findViewById(R.id.txtForgotPass);
-        t2.setMovementMethod(LinkMovementMethod.getInstance());
+        TextView txtForgotPass  = (TextView) findViewById(R.id.txtForgotPass);
+        TextView txtSignup      = (TextView) findViewById(R.id.txtSignUp);
+
+       // txtForgotPass.setMovementMethod(LinkMovementMethod.getInstance());
+
+        txtForgotPass.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://gps.zists.com/password/reset"));
+                startActivity(browserIntent);
+            }
+        });
+
+        txtSignup.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://gps.zists.com/register"));
+                startActivity(browserIntent);
+            }
+        });
 
 
         SharedPreferencesHelper.setISLogin(mContext,"0");

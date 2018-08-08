@@ -161,7 +161,7 @@ public class MenuActivity extends AppCompatActivity {
         menus.add(new GridMenu("Routes", R.drawable.route_1));
         menus.add(new GridMenu("Stops", R.drawable.bus_stop_1));
         menus.add(new GridMenu("Traffic", R.drawable.traffic_1));
-        menus.add(new GridMenu("Favorite Route", R.drawable.ic_menu_favourite_list_1));
+        menus.add(new GridMenu("Favorites", R.drawable.ic_menu_favourite_list_1));
         return menus;
     }
 

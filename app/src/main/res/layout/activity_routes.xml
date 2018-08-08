@@ -41,14 +41,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_marginTop="?attr/actionBarSize"
-                android:divider="@color/actionbar_color"
+                android:divider="@color/accentColor"
                 android:dividerHeight="4px"
                 android:padding="5dp"
                 android:scrollbars="vertical" />
         </LinearLayout>
     </RelativeLayout>
 
-    <include layout="@layout/bottm_sheet_layout" />
+    <include layout="@layout/bottom_sheet_layout" />
 
 
 </android.support.design.widget.CoordinatorLayout>

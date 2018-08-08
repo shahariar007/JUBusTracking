@@ -62,7 +62,7 @@
                         android:layout_below="@+id/map"
                         android:padding="3dp"
                         android:text="Bus Location:"
-                        android:textColor="@color/actionbar_color"
+                        android:textColor="@color/accentColor"
                         android:textSize="20sp" />
 
                     <TextView
@@ -72,7 +72,7 @@
                         android:layout_below="@+id/map"
                         android:padding="3dp"
                         android:text="Location searching..."
-                        android:textColor="@color/myTextPrimaryColor"
+                        android:textColor="@color/myTextSecondaryColor"
                         android:textSize="14sp" />
 
                     <RelativeLayout
@@ -94,7 +94,7 @@
                             android:gravity="left"
                             android:padding="3dp"
                             android:text="Distance Away: "
-                            android:textColor="@color/actionbar_color"
+                            android:textColor="@color/accentColor"
                             android:textSize="20sp"
                             android:layout_alignParentLeft="true"/>
 
@@ -111,8 +111,6 @@
                             android:layout_toRightOf="@+id/txtLocation"
                             android:layout_alignParentRight="true"
                             />
-
-
 
                         <ProgressBar
                             android:id="@+id/progress_bar"

@@ -1,9 +1,17 @@
 package com.hossain.ju.bus.location;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -127,4 +135,34 @@ public class LocationUtils {
         }
         return result.toString();
     }
+
+    public static  boolean isGPSOn(Context mContex){
+        LocationManager manager = (LocationManager) mContex.getSystemService(Context.LOCATION_SERVICE );
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+
+
+    public  static void showSettingsAlert(final Activity activity ) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("GPS  settings");
+        builder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        builder.setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                activity.startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+
+        //builder.setNegativeButton()
+        AlertDialog alert  = builder.create();
+        alert.setCancelable(false);
+        alert.show();
+
+    }
+
+
+
 }

@@ -1,11 +1,21 @@
 package com.hossain.ju.bus;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +32,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.hossain.ju.bus.db.DbAdapter;
 import com.hossain.ju.bus.db.LocationContract;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.location.LocationUtils;
 import com.hossain.ju.bus.model.route.Route;
 import com.hossain.ju.bus.model.route.Schedule;
 import com.hossain.ju.bus.networking.APIClient;
@@ -55,9 +73,12 @@ public class RoutesActivity extends AppCompatActivity {
     APIServices apiServices;
     Bundle bundle;
     List<Schedule> listOfSubRoute;
+    List<Schedule> listOfSubRoutessss;
     ListView listViewOfBottomSheet;
     BottomSheetBehavior sheetBehavior;
     TextView txtSchTitle;
+    private LocationRequest mLocationRequest;
+    private static final int LOCATION = 120;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +93,7 @@ public class RoutesActivity extends AppCompatActivity {
 
         if (Utils.isConnected(mContext)) {
             populatesRoutes();
-        }else {
+        } else {
             Utils.toast(mContext, getString(R.string.error_internet_connection));
         }
 
@@ -159,7 +180,7 @@ public class RoutesActivity extends AppCompatActivity {
         response.enqueue(new Callback<ResponseWrapperArray<Route>>() {
             @Override
             public void onResponse(Call<ResponseWrapperArray<Route>> call, Response<ResponseWrapperArray<Route>> response) {
-                if(progressDialog != null){
+                if (progressDialog != null) {
                     progressDialog.dismissAllowingStateLoss();
                 }
 
@@ -201,7 +222,7 @@ public class RoutesActivity extends AppCompatActivity {
                                             break;
                                         case R.id.layoutRoot: {
                                             toggleBottomSheet(position);
-//                                            Intent intent = new Intent(mContext, MainActivity.class);
+//                                            Intent intent = new Intent(mContext, MapActivity.class);
 //                                            intent.putExtra("id", routeList.get(position).getId());
 //                                            Log.d("TISS", routeList.get(position).getId() + "");
 //                                            mContext.startActivity(intent);
@@ -241,24 +262,89 @@ public class RoutesActivity extends AppCompatActivity {
 
     }
 
-    public void generateList( final List<Schedule> listOfSubRoute) {
+    public int position;
+
+    public void generateList(List<Schedule> listOfSubRoute) {
+        listOfSubRoutessss = listOfSubRoute;
         if (listOfSubRoute != null) {
             ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.custom_text_layout, listOfSubRoute);
             listViewOfBottomSheet.setAdapter(arrayAdapter);
             listViewOfBottomSheet.setDividerHeight(10);
             arrayAdapter.notifyDataSetChanged();
             listViewOfBottomSheet.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    Utils.toast(mContext,"POS: "+ listOfSubRoute.get(i).getId() );
-                    Intent intent = new Intent(mContext,MainActivity.class);
-                     Schedule schedule = listOfSubRoute.get(i);
-                    intent.putExtra(Utils.SCHEDULE_ID,schedule.getId() );
-                    startActivity(intent);
+                    position = i;
+                    askForPermission(android.Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
                 }
             });
 
+        }
+    }
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(RoutesActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(RoutesActivity.this, permission)) {
+
+                //This is called if user has denied the permission before
+                //In this case I am just asking the permission again
+                Log.e(TAG, "onRequestPermissionsResult: " +" denied:0" );
+               // showSettingsAlert(RoutesActivity.this);
+                ActivityCompat.requestPermissions(RoutesActivity.this, new String[]{permission}, requestCode);
+
+            } else {
+                Log.e(TAG, "onRequestPermissionsResult: " +" denied:1" );
+                showLocationPermission(this);
+                ActivityCompat.requestPermissions(RoutesActivity.this, new String[]{permission}, requestCode);
+
+            }
+        } else {
+            //Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "onRequestPermissionsResult: " +" granted:2" );
+            setIntent();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                //Location
+                case LOCATION:
+                     setIntent();
+                    break;
+
+            }
+            Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+        } else {
+          // Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "onRequestPermissionsResult: " +" denied:3" );
+
+        }
+    }
+
+    public void setIntent() {
+
+        if(!LocationUtils.isGPSOn(mContext)){
+            Log.e(TAG, "GPS OFF: " );
+           // LocationUtils.turnGPSOn(mContext);
+           LocationUtils.showSettingsAlert(RoutesActivity.this);
+        }else{
+            Log.e(TAG, "GPS ON: " );
+            if (listOfSubRoutessss == null || listOfSubRoutessss.size() == 0) {
+                Utils.toast(mContext, "NULLL");
+            } else {
+                Utils.toast(mContext, "POS: " + listOfSubRoutessss.get(position).getId());
+                Intent intent = new Intent(mContext, MapActivity.class);
+                Schedule schedule = listOfSubRoutessss.get(position);
+                intent.putExtra(Utils.SCHEDULE_ID, schedule.getId());
+                startActivity(intent);
+            }
         }
     }
 
@@ -329,4 +415,31 @@ public class RoutesActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+
+    public void showLocationPermission(final Activity activity ){
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
+
+    }
+    public static   void turnGPSOn(Context mContext){
+//        Log.d("turnGPSOn", "turnGPSOn: ");
+//        String provider = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+//
+//        if(!provider.contains("gps")){ //if gps is disabled
+//            final Intent poke = new Intent();
+//            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+//            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+//            poke.setData(Uri.parse("3"));
+//            mContext.sendBroadcast(poke);
+//        }
+        Intent intent=new Intent("android.location.GPS_ENABLED_CHANGE");
+        intent.putExtra("enabled", true);
+        mContext.sendBroadcast(intent);
+    }
+
+
 }

@@ -32,6 +32,7 @@ import retrofit2.Response;
 
 public class NotificationActivity extends AppCompatActivity {
 
+    private Context mContext;
     RecyclerView notificationRecyclerView;
     APIServices apiServices;
     private String TAG = "NotificationActivity";
@@ -41,11 +42,10 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.mContext = this;
         setContentView(R.layout.activity_notification);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle("Notification");
+        setTitle("Notices");
+       setupToolbar();
 
         notificationRecyclerView = (RecyclerView) findViewById(R.id.notificationRecyclerView);
         apiServices = APIClient.getInstance().create(APIServices.class);
@@ -54,6 +54,7 @@ public class NotificationActivity extends AppCompatActivity {
         recyclerViewAdapter = new RecyclerViewAdapter(this);
         recyclerViewAdapter.setListOfNotification(new ArrayList<Notice>());
         notificationRecyclerView.setAdapter(recyclerViewAdapter);
+        Utils.applyCustomFont(mContext,getWindow().getDecorView().getRootView());
         getNotification();
     }
 
@@ -74,6 +75,7 @@ public class NotificationActivity extends AppCompatActivity {
         @Override
         public Holders onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(context).inflate(R.layout.root_notification_layout, parent, false);
+            Utils.applyCustomFont(mContext,view);
             return new Holders(view);
         }
 
@@ -137,9 +139,16 @@ public class NotificationActivity extends AppCompatActivity {
                 // there is more than just a failing request (like: no internet connection)
                 progressDialog.dismissAllowingStateLoss();
 
-                Utils.toast(NotificationActivity.this, "data Failed!");
+                Utils.toast(NotificationActivity.this, "Data Failed!");
             }
         });
 
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 }

@@ -1,6 +1,7 @@
 package com.hossain.ju.bus;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,8 +11,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -36,8 +39,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
-import com.hossain.ju.bus.location.GetDataFromUrl;
-import com.hossain.ju.bus.location.GetDirections;
 import com.hossain.ju.bus.location.LocationListener;
 import com.hossain.ju.bus.location.LocationUpdateIntentService;
 import com.hossain.ju.bus.location.LocationUtils;
@@ -68,9 +69,9 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MapActivity";
 
     public static final int REQ_PERMISSIONS_REQUEST = 5;
 
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(MainActivity.this);
+        mapFragment.getMapAsync(MapActivity.this);
         startIntentService();
 
        if(Utils.isConnected(mContext)){
@@ -311,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         /**
-         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         * Receives data sent from FetchAddressIntentService and updates the UI in MapActivity.
          */
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -374,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void getBusLocation(int id) {
 
-        final CustomProgressDialog progressDialog = UI.show(MainActivity.this);
+        final CustomProgressDialog progressDialog = UI.show(MapActivity.this);
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         Log.e("SCHE_ID::", id + "");
 
@@ -427,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         mMarkerB.setPosition(dest);
 
 //                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
-//                        GetDirections getDirections = new GetDirections(MainActivity.this);
+//                        GetDirections getDirections = new GetDirections(MapActivity.this);
 //                        getDirections.startGettingDirections(url);
                         progressDialog.dismissAllowingStateLoss();
                     }
@@ -535,6 +536,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //BOUND_PADDING is an int to specify padding of bound.. try 100.
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_BOUND_PADDING);
         gMap.animateCamera(cu);
+    }
+
+    AlertDialog alert = null;
+
+    public  void showSettingsAlert(final Activity activity ) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("GPS  settings");
+        builder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        builder.setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                activity.startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+        alert = builder.create();
+        alert.setCancelable(false);
+        alert.show();
+
     }
 
 }
