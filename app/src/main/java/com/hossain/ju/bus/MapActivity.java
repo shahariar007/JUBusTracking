@@ -235,16 +235,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng latLng, latLng2;
         if (TempData.CURRENT_TRANSPORT_LOC != null  ) {
             latLng = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
-
             mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
 
         }else{
-            latLng = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
-            mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
+            latLng = new LatLng(24.777176, 90.399452);
+            mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_USER_LOC).icon(icon));
         }
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
-        if (TempData.CURRENT_USER_LOC != null && TempData.USER_LAT != 0.0) {
+
+        if (TempData.CURRENT_USER_LOC != null ) {
             latLng2 = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
         } else {
             latLng2 = new LatLng(24.777176, 90.399452);
@@ -255,6 +254,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         gMap.getUiSettings().setZoomControlsEnabled(true);
