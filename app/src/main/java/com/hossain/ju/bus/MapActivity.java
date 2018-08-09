@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
+import com.hossain.ju.bus.location.GetDataFromUrl;
+import com.hossain.ju.bus.location.GetDirections;
 import com.hossain.ju.bus.location.LocationListener;
 import com.hossain.ju.bus.location.LocationUpdateIntentService;
 import com.hossain.ju.bus.location.LocationUtils;
@@ -120,11 +122,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
         startIntentService();
 
-       if(Utils.isConnected(mContext)){
-           getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
-       }else{
-           Utils.toast(mContext,getString(R.string.error_internet_connection));
-       }
+        if (Utils.isConnected(mContext)) {
+            getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
+        } else {
+            Utils.toast(mContext, getString(R.string.error_internet_connection));
+        }
 
 
         //setDistanceDisplay();
@@ -375,7 +377,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void getBusLocation(int id) {
 
-        final CustomProgressDialog progressDialog = UI.show(MapActivity.this);
+        //final CustomProgressDialog progressDialog = UI.show(MapActivity.this);
         String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
         Log.e("SCHE_ID::", id + "");
 
@@ -385,7 +387,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Log.d(TAG, "apply: " + i);
                 return objectObservable.delay(Utils.REQUEST_DELAY, TimeUnit.SECONDS);
             }
-        }).repeat().observeOn(AndroidSchedulers.mainThread()).timeout(50, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
+        }).repeat().observeOn(AndroidSchedulers.mainThread()).timeout(30, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 ds = d;
@@ -393,14 +395,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             @Override
             public void onNext(ResponseWrapperObject<RouteSchedule> routeScheduleResponseWrapperObject) {
-
+              long x= System.currentTimeMillis();
                 Log.e("TXXXXX", "HIT");
+                txtBusLocation.setText("test");
                 try {
-
                     if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
                         RouteSchedule route = routeScheduleResponseWrapperObject.getData();
-                        DecimalFormat df = new DecimalFormat("##.000000");
-                        Log.e("DATA:", "" + route.getLongitude() + ":" + df.format(new BigDecimal(route.getLongitude()).doubleValue()));
+
+//                        if (route != null && (route.getLatitude() != null || !route.getLatitude().isEmpty()) && (route.getLongitude() != null || !route.getLongitude().isEmpty())) {
+//
+//                        } else {
+//
+//                        }
+//                        DecimalFormat df = new DecimalFormat("##.000000");
+//                        Log.e("DATA:", "" + route.getLongitude() + ":" + df.format(new BigDecimal(route.getLongitude()).doubleValue()));
+
+
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
                         TempData.CURRENT_TRANSPORT_LOC = address;
@@ -408,9 +418,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         TempData.LAST_LONGITUDE = Double.valueOf(route.getLongitude());
                         txtBusLocation.setText(address);
 
-                        //double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
-                        // Log.e(TAG, "DIStance::" + distance);
-                       // txtDistance.setText("" + Utils.round(distance) + " Km");
+                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
+                         Log.e(TAG, "DIStance::" + distance);
+                         txtDistance.setText("" + Utils.round(distance) + " Km");
 
                         // Getting URL to the Google Directions API
 
@@ -427,26 +437,56 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         mMarkerA.setPosition(origin);
                         mMarkerB.setPosition(dest);
 
-//                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
-//                        GetDirections getDirections = new GetDirections(MapActivity.this);
-//                        getDirections.startGettingDirections(url);
-                        progressDialog.dismissAllowingStateLoss();
+                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
+                        GetDirections getDirections = new GetDirections(MapActivity.this);
+                        getDirections.startGettingDirections(url);
+
+                        //progressDialog.dismissAllowingStateLoss();
+                    }else
+                    {
+                        Log.d(TAG, "onNext: "+routeScheduleResponseWrapperObject.getStatus());
                     }
                 } catch (Exception e) {
                     e.getStackTrace();
                     // Log.e(TAG,e.getMessage());
                 }
             }
+            public void nextOnThread()
+            {
+                Thread thread=new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                            }
+                        });
+                    }
+                });
+                thread.start();
+            }
 
             @Override
             public void onError(Throwable e) {
-                progressDialog.dismissAllowingStateLoss();
-                Utils.toast(mContext, "data Failed!");
+               // progressDialog.dismissAllowingStateLoss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!isFinishing())
+                        Utils.toast(mContext, "data Failed!");
+                    }
+                });
+
+                Log.d(TAG, "onError: "+e.getMessage());
             }
 
             @Override
             public void onComplete() {
-                Log.d("TXXXXX", "HIT");
+                //progressDialog.dismissAllowingStateLoss();
+                Log.d(TAG, "HITOUT");
                 Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
             }
         });
@@ -540,7 +580,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     AlertDialog alert = null;
 
-    public  void showSettingsAlert(final Activity activity ) {
+    public void showSettingsAlert(final Activity activity) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("GPS  settings");

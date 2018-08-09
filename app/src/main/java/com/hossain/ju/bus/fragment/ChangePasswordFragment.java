@@ -169,12 +169,11 @@ public class ChangePasswordFragment extends Fragment {
             public void onClick(View v) {
                 if (A && B) {
                     HashMap<String,String> map=new HashMap<>();
-                    map.put("oldPass",oldPassword.getText().toString());
-                    map.put("newPass",newPassword.getText().toString());
-                    map.put("UserID", SharedPreferencesHelper.getLastUserId(getActivity()));
+                    map.put("password",oldPassword.getText().toString());
+                    map.put("new_password",newPassword.getText().toString());
                     setPassword(map);
                 } else {
-                    Toast.makeText(getActivity(), "A==" + A + "B==" + B, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Didn't match", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -197,7 +196,7 @@ public class ChangePasswordFragment extends Fragment {
                 //  Log.e(TAG,response.toString());
                 try {
                     if (response != null && response.isSuccessful()) {
-                        Toast.makeText(getActivity(), ""+response.body(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Password change successfully", Toast.LENGTH_SHORT).show();
                     } else {
                         // parse the response body …
                         try {
@@ -205,7 +204,7 @@ public class ChangePasswordFragment extends Fragment {
                             if (error != null)
                                 Log.e("Login error", "Code: " + response.code() + " Message: " + response.message());
                             //Utils.toast(mContext,error.message());
-                            Utils.toast(getContext(), "Login Failed!");
+                            Utils.toast(getContext(), "password change failed");
 
                         } catch (Exception e) {
                             e.printStackTrace();

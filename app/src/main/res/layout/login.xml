@@ -112,7 +112,7 @@
                             android:maxLength="10"
                             android:paddingLeft="8dp"
                             android:singleLine="true"
-                            android:text=""
+                            android:text="123456"
                             android:textColor="@color/myTextPrimaryColor"
                             android:textColorHint="@color/myTextPrimaryColor" />
                     </android.support.design.widget.TextInputLayout>
