@@ -50,13 +50,9 @@ import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
 import com.hossain.ju.bus.networking.ResponseWrapperObject;
 import com.hossain.ju.bus.utils.Constants;
-import com.hossain.ju.bus.utils.CustomProgressDialog;
 import com.hossain.ju.bus.utils.TempData;
 import com.hossain.ju.bus.utils.Utils;
-import com.hossain.ju.bus.views.UI;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +99,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     ArrayList<LatLng> points = null;
     PolylineOptions lineOptions = null;
+    AlertDialog alert = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +115,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(MapActivity.this);
         startIntentService();
 
@@ -178,13 +174,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onStop() {
         super.onStop();
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (ds != null)
+        if (ds != null){
             ds.dispose();
+        }
+
+        stopIntentService();
+
+
+
     }
 
     @Override
@@ -206,6 +209,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startService(intent);
     }
 
+    /**
+     * stop  running service.
+     */
+    protected void stopIntentService() {
+        Intent intent = new Intent(this, LocationUpdateIntentService.class);
+        stopService(intent);
+    }
+
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -219,27 +231,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_action_bus);
+        float zoomLevel = (float) 12.0f;
         LatLng latLng, latLng2;
-        if (TempData.CURRENT_TRANSPORT_LOC != null) {
-            latLng = new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE);
-        } else {
-            latLng = new LatLng(23.777176, 90.399452);
-        }
+        if (TempData.CURRENT_TRANSPORT_LOC != null  ) {
+            latLng = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
 
-        if (TempData.CURRENT_USER_LOC != null) {
+            mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
+
+        }else{
+            latLng = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
+            mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
+        }
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+
+        if (TempData.CURRENT_USER_LOC != null && TempData.USER_LAT != 0.0) {
             latLng2 = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
         } else {
             latLng2 = new LatLng(24.777176, 90.399452);
         }
 
-        mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
-
         mMarkerB = gMap.addMarker(new MarkerOptions().position(latLng2).title(TempData.CURRENT_USER_LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
-
-        //gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
-        float zoomLevel = (float) 12.0f;
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -337,7 +349,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (resultCode == Constants.SUCCESS_RESULT) {
                 //  Utils.toast(mContext, getString(R.string.address_found));
 
-                //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE))));
+                //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE))));
             }
         }
     }
@@ -407,25 +419,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                        } else {
 //
 //                        }
-//                        DecimalFormat df = new DecimalFormat("##.000000");
-//                        Log.e("DATA:", "" + route.getLongitude() + ":" + df.format(new BigDecimal(route.getLongitude()).doubleValue()));
 
 
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
                         TempData.CURRENT_TRANSPORT_LOC = address;
-                        TempData.LAST_LATITUDE = Double.valueOf(route.getLatitude());
-                        TempData.LAST_LONGITUDE = Double.valueOf(route.getLongitude());
+                        TempData.TRANSPORT_LATITUDE = Double.valueOf(route.getLatitude());
+                        TempData.TRANSPORT_LONGITUDE = Double.valueOf(route.getLongitude());
                         txtBusLocation.setText(address);
 
-                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
-                         Log.e(TAG, "DIStance::" + distance);
-                         txtDistance.setText("" + Utils.round(distance) + " Km");
+                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE));
+                        Log.e(TAG, "DIStance::" + distance);
+                        txtDistance.setText("" + Utils.round(distance) + " Km");
 
                         // Getting URL to the Google Directions API
 
                         LatLng dest = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
-                        LatLng origin = new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE);
+                        LatLng origin = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
 
                         try {
 
@@ -442,32 +452,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         getDirections.startGettingDirections(url);
 
                         //progressDialog.dismissAllowingStateLoss();
-                    }else
+                    }else if(routeScheduleResponseWrapperObject != null && routeScheduleResponseWrapperObject.getStatus().equalsIgnoreCase("failed"))
                     {
                         Log.d(TAG, "onNext: "+routeScheduleResponseWrapperObject.getStatus());
+                        txtBusLocation.setText("Bus location  not found");
                     }
                 } catch (Exception e) {
                     e.getStackTrace();
                     // Log.e(TAG,e.getMessage());
                 }
             }
-            public void nextOnThread()
-            {
-                Thread thread=new Thread(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-
-                            }
-                        });
-                    }
-                });
-                thread.start();
-            }
 
             @Override
             public void onError(Throwable e) {
@@ -476,7 +471,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void run() {
                         if(!isFinishing())
-                        Utils.toast(mContext, "data Failed!");
+                        //Utils.toast(mContext, "data Failed!");
+                      txtBusLocation.setText("Bus location  not found");
                     }
                 });
 
@@ -487,7 +483,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onComplete() {
                 //progressDialog.dismissAllowingStateLoss();
                 Log.d(TAG, "HITOUT");
-                Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
             }
         });
 //        Call<ResponseWrapperObject<RouteSchedule>> response = apiServices.getBusLocationBySchedule(token, id);
@@ -508,11 +504,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                        String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 //
 //                        TempData.CURRENT_TRANSPORT_LOC = address;
-//                        TempData.LAST_LATITUDE = Double.valueOf(route.getLatitude());
-//                        TempData.LAST_LONGITUDE = Double.valueOf(route.getLongitude());
+//                        TempData.TRANSPORT_LATITUDE = Double.valueOf(route.getLatitude());
+//                        TempData.TRANSPORT_LONGITUDE = Double.valueOf(route.getLongitude());
 //                        txtBusLocation.setText(address);
 //
-//                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.LAST_LATITUDE, TempData.LAST_LONGITUDE));
+//                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE));
 //                        Log.e(TAG, "DIStance::" + distance);
 //                        txtDistance.setText("" + Utils.round(distance));
 //
@@ -578,7 +574,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         gMap.animateCamera(cu);
     }
 
-    AlertDialog alert = null;
+
 
     public void showSettingsAlert(final Activity activity) {
 

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.hossain.ju.bus.R;
 import com.hossain.ju.bus.RecyclerViewClickListener;
 import com.hossain.ju.bus.model.route.Route;
+import com.hossain.ju.bus.utils.Utils;
 
 import java.util.List;
 import java.util.Random;
@@ -54,6 +55,7 @@ public class RouteViewAdapter extends RecyclerView.Adapter<RouteViewAdapter.Rout
     @Override
     public RouteViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_route_row, viewGroup, false);
+        Utils.applyCustomFont(mContext,v);
         return new RouteViewHolder(v);
     }
 

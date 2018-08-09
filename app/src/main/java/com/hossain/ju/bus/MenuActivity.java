@@ -61,11 +61,11 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        Utils.applyCustomFont(mContext,getWindow().getDecorView().getRootView());
         mContext =  this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Log.e("TAG:", "Called2.");
-
 
 
         dl = (DrawerLayout) findViewById(R.id.activity_main);

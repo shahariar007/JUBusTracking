@@ -87,6 +87,7 @@ public class RoutesActivity extends AppCompatActivity {
         mContext = this;
         bundle = getIntent().getExtras();
         init();
+        Utils.applyCustomFont(mContext,getWindow().getDecorView().getRootView());
 
         setupToolbar();
         apiServices = APIClient.getInstance().create(APIServices.class);
@@ -96,7 +97,6 @@ public class RoutesActivity extends AppCompatActivity {
         } else {
             Utils.toast(mContext, getString(R.string.error_internet_connection));
         }
-
     }
 
     private void init() {
@@ -109,7 +109,7 @@ public class RoutesActivity extends AppCompatActivity {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(linearLayout);
         txtSchTitle = linearLayout.findViewById(R.id.txtSchTitle);
-        txtSchTitle.setText("hffygedf");
+        txtSchTitle.setText("");
         sheetBehavior.setPeekHeight(0);
 
         sheetBehavior.setHideable(true);
@@ -218,7 +218,7 @@ public class RoutesActivity extends AppCompatActivity {
 
                                             break;
                                         case R.id.imgLocation:
-                                            Toast.makeText(RoutesActivity.this, " Location=" + position, Toast.LENGTH_SHORT).show();
+                                          //  Toast.makeText(RoutesActivity.this, " Location=" + position, Toast.LENGTH_SHORT).show();
                                             break;
                                         case R.id.layoutRoot: {
                                             toggleBottomSheet(position);
@@ -232,7 +232,7 @@ public class RoutesActivity extends AppCompatActivity {
                                 }
                             });
                         } else {
-                            Toast.makeText(mContext, "No data", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "No data found!", Toast.LENGTH_SHORT).show();
                         }
 
                     } else {
@@ -256,7 +256,7 @@ public class RoutesActivity extends AppCompatActivity {
                 // there is more than just a failing request (like: no internet connection)
                 progressDialog.dismissAllowingStateLoss();
                 Log.e(TAG, t.getMessage() + "");
-                Utils.toast(mContext, "data Failed!");
+                Utils.toast(mContext, "data dot found!!");
             }
         });
 
@@ -337,9 +337,10 @@ public class RoutesActivity extends AppCompatActivity {
         }else{
             Log.e(TAG, "GPS ON: " );
             if (listOfSubRoutessss == null || listOfSubRoutessss.size() == 0) {
-                Utils.toast(mContext, "NULLL");
+               // Utils.toast(mContext, "NULLL");
             } else {
-                Utils.toast(mContext, "POS: " + listOfSubRoutessss.get(position).getId());
+
+                //Utils.toast(mContext, "POS: " + listOfSubRoutessss.get(position).getId());
                 Intent intent = new Intent(mContext, MapActivity.class);
                 Schedule schedule = listOfSubRoutessss.get(position);
                 intent.putExtra(Utils.SCHEDULE_ID, schedule.getId());
@@ -363,14 +364,14 @@ public class RoutesActivity extends AppCompatActivity {
         values.put(LocationContract.TransLocation.COLUMN_NAME_FAV_ID, id);
         long rowId = adapter.insertFavoriteItem(values);
         if (rowId != 0) {
-            Toast.makeText(mContext, "Fev Update Successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Favourite route Updated Successfully", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void deleteFavID(int id) {
         DbAdapter adapter = new DbAdapter(this);
         if (adapter.deleteID(id) != 0) {
-            Toast.makeText(mContext, "Not Favourite", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Not Favourite Added", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -378,6 +379,15 @@ public class RoutesActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.routes_menu, menu);
+        MenuItem item = menu.findItem(R.id.ic_favourites_menu);
+        if(bundle.get("fav") != null && bundle.getBoolean("fav") == true ){
+            item.setVisible(false);
+        }else{
+            item.setVisible(true);
+        }
+
+        invalidateOptionsMenu();
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -390,16 +400,14 @@ public class RoutesActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Toast.makeText(this, "You have selected Bookmark Menu", Toast.LENGTH_SHORT).show();
                 return true;
 
-            case R.id.favourites_menu:
+            case R.id.ic_favourites_menu:
                 Intent intent = new Intent(this, RoutesActivity.class);
-                intent.putExtra("fav", false);
+                intent.putExtra("fav", true);
                 startActivity(intent);
+                finish();
                 return true;
-
-
         }
 
         return super.onOptionsItemSelected(item);
