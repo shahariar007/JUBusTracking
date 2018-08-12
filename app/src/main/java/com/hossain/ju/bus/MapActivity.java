@@ -403,7 +403,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Log.d(TAG, "apply: " + i);
                 return objectObservable.delay(Utils.REQUEST_DELAY, TimeUnit.SECONDS);
             }
-        }).repeat().observeOn(AndroidSchedulers.mainThread()).timeout(30, TimeUnit.SECONDS).subscribeOn(Schedulers.newThread()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
+        }).observeOn(AndroidSchedulers.mainThread()).timeout(60, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 ds = d;
@@ -480,7 +480,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
 
-                Log.d(TAG, "onError: "+e.getMessage());
+                Log.d(TAG, "onError: "+e.getLocalizedMessage());
             }
 
             @Override

@@ -46,94 +46,114 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true" />
 
-
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="3dp"
-                    android:background="@color/White"
-                    android:orientation="vertical"
-                    android:padding="5dp"  >
+                    android:layout_gravity="bottom">
 
-                    <TextView
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/fab"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/map"
-                        android:padding="3dp"
-                        android:text="Bus Location:"
-                        android:textColor="@color/accentColor"
-                        android:textSize="20sp" />
+                        android:layout_gravity="right"
+                        android:src="@drawable/ic_my_location_black_24dp"
+                        android:layout_margin="16dp"
+                        android:scaleY=".8"
+                        android:scaleX=".8"
+                        android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txtBusLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/map"
-                        android:padding="3dp"
-                        android:text="Location searching..."
-                        android:textColor="@color/myTextSecondaryColor"
-                        android:textSize="14sp" />
-
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="3dp"
-                        android:layout_marginBottom="5dp">
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="40dp"
+                        android:background="@color/White"
+                        android:orientation="vertical"
+                        android:padding="5dp">
 
-                        <View android:id="@+id/dummy"
-                            android:layout_height="0dp"
-                            android:layout_width="0dp"
-                            android:layout_centerInParent="true"/>
 
                         <TextView
-                            android:id="@+id/txtLocation"
-                            android:layout_alignRight="@id/dummy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="left"
+                            android:layout_below="@+id/map"
                             android:padding="3dp"
-                            android:text="Distance Away: "
+                            android:text="Bus Location:"
                             android:textColor="@color/accentColor"
-                            android:textSize="20sp"
-                            android:layout_alignParentLeft="true"/>
+                            android:textSize="20sp" />
 
                         <TextView
-                            android:id="@+id/txtDistance"
-                            android:layout_alignLeft="@id/dummy"
+                            android:id="@+id/txtBusLocation"
                             android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/map"
+                            android:padding="3dp"
+                            android:text="Location searching..."
+                            android:textColor="@color/myTextSecondaryColor"
+                            android:textSize="14sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:padding="3dp">
+
+                            <View
+                                android:id="@+id/dummy"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_centerInParent="true" />
+
+                            <TextView
+                                android:id="@+id/txtLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignRight="@id/dummy"
+                                android:gravity="left"
+                                android:padding="3dp"
+                                android:text="Distance Away: "
+                                android:textColor="@color/accentColor"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/txtDistance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignLeft="@id/dummy"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="10dp"
+                                android:layout_toRightOf="@+id/txtLocation"
+                                android:padding="3dp"
+                                android:text=""
+                                android:textColor="@color/myTextPrimaryColor"
+                                android:textSize="14sp" />
+
+                            <ProgressBar
+                                android:id="@+id/progress_bar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:visibility="gone" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txtTimeCal"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
+                            android:gravity="left|right"
                             android:padding="3dp"
-                            android:text=""
+                            android:text="Apporx. Time to reach: "
                             android:textColor="@color/myTextPrimaryColor"
-                            android:textSize="14sp"
-                            android:layout_toRightOf="@+id/txtLocation"
-                            android:layout_alignParentRight="true"
-                            />
+                            android:textSize="20sp"
+                            android:visibility="gone" />
 
-                        <ProgressBar
-                            android:id="@+id/progress_bar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:visibility="gone"/>
-                    </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/txtTimeCal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:gravity="left|right"
-                        android:padding="3dp"
-                        android:text="Apporx. Time to reach: "
-                        android:textColor="@color/myTextPrimaryColor"
-                        android:textSize="20sp"
-                        android:visibility="gone"/>
-                </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
+
+
             </FrameLayout>
-
         </LinearLayout>
 
         <!--

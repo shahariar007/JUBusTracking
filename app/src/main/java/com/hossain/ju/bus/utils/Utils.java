@@ -51,7 +51,7 @@ public class Utils {
 	public final static String BEARER                             = "Bearer ";
 
 	public final static String SCHEDULE_ID                         = "SCHEDULE_ID ";
-	public final static int  REQUEST_DELAY                         = 60;
+	public final static int  REQUEST_DELAY                         = 20;
 
 	public final static String RESET_PASSWORD_URL              = "https://gps.zists.com/password/reset";
 
