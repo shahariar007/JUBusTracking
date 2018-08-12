@@ -118,11 +118,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
         startIntentService();
 
-        if (Utils.isConnected(mContext)) {
-            getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
-        } else {
-            Utils.toast(mContext, getString(R.string.error_internet_connection));
-        }
+//        if (Utils.isConnected(mContext)) {
+//            getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
+//        } else {
+//            Utils.toast(mContext, getString(R.string.error_internet_connection));
+//        }
 
 
         //setDistanceDisplay();
@@ -231,14 +231,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.icon_action_bus);
-        float zoomLevel = (float) 12.0f;
+        float zoomLevel = (float) 15.0f;
         LatLng latLng, latLng2;
         if (TempData.CURRENT_TRANSPORT_LOC != null  ) {
             latLng = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
             mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_TRANSPORT_LOC).icon(icon));
 
         }else{
-            latLng = new LatLng(24.777176, 90.399452);
+            latLng = new LatLng(23.780956, 90.405006);
             mMarkerA = gMap.addMarker(new MarkerOptions().position(latLng).title(TempData.CURRENT_USER_LOC).icon(icon));
         }
 
@@ -246,7 +246,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (TempData.CURRENT_USER_LOC != null ) {
             latLng2 = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
         } else {
-            latLng2 = new LatLng(24.777176, 90.399452);
+            latLng2 = new LatLng(23.780956, 90.405006);
         }
 
         mMarkerB = gMap.addMarker(new MarkerOptions().position(latLng2).title(TempData.CURRENT_USER_LOC).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
@@ -254,7 +254,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+
+        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                latLng, zoomLevel);
+        gMap.animateCamera(location);
+       // gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         gMap.getUiSettings().setZoomControlsEnabled(true);
