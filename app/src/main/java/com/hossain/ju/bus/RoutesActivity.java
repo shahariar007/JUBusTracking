@@ -3,11 +3,8 @@ package com.hossain.ju.bus;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -15,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,33 +28,35 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.hossain.ju.bus.db.DbAdapter;
 import com.hossain.ju.bus.db.LocationContract;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.location.LocationUtils;
 import com.hossain.ju.bus.model.route.Route;
 import com.hossain.ju.bus.model.route.Schedule;
+import com.hossain.ju.bus.model.schedule.RouteSchedule;
 import com.hossain.ju.bus.networking.APIClient;
 import com.hossain.ju.bus.networking.APIServices;
 import com.hossain.ju.bus.networking.ResponseWrapperArray;
+import com.hossain.ju.bus.networking.ResponseWrapperObject;
 import com.hossain.ju.bus.route.RouteViewAdapter;
 import com.hossain.ju.bus.utils.APIError;
 import com.hossain.ju.bus.utils.CustomProgressDialog;
 import com.hossain.ju.bus.utils.ErrorUtils;
+import com.hossain.ju.bus.utils.TempData;
 import com.hossain.ju.bus.utils.Utils;
 import com.hossain.ju.bus.views.UI;
 import com.hossain.ju.bus.widget.SimpleDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,6 +78,8 @@ public class RoutesActivity extends AppCompatActivity {
     private LocationRequest mLocationRequest;
     private static final int LOCATION = 120;
 
+    Disposable ds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +97,11 @@ public class RoutesActivity extends AppCompatActivity {
         } else {
             Utils.toast(mContext, getString(R.string.error_internet_connection));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void init() {
@@ -305,7 +310,7 @@ public class RoutesActivity extends AppCompatActivity {
         } else {
             //Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "onRequestPermissionsResult: " +" granted:2" );
-            setIntent();
+            callMapIntent();
         }
     }
 
@@ -316,7 +321,7 @@ public class RoutesActivity extends AppCompatActivity {
             switch (requestCode) {
                 //Location
                 case LOCATION:
-                     setIntent();
+                     callMapIntent();
                     break;
 
             }
@@ -328,7 +333,7 @@ public class RoutesActivity extends AppCompatActivity {
         }
     }
 
-    public void setIntent() {
+    public void callMapIntent() {
 
         if(!LocationUtils.isGPSOn(mContext)){
             Log.e(TAG, "GPS OFF: " );
@@ -340,11 +345,9 @@ public class RoutesActivity extends AppCompatActivity {
                // Utils.toast(mContext, "NULLL");
             } else {
 
-                //Utils.toast(mContext, "POS: " + listOfSubRoutessss.get(position).getId());
-                Intent intent = new Intent(mContext, MapActivity.class);
-                Schedule schedule = listOfSubRoutessss.get(position);
-                intent.putExtra(Utils.SCHEDULE_ID, schedule.getId());
-                startActivity(intent);
+                Utils.toast(mContext, "POS: " + listOfSubRoutessss.get(position).getId());
+                getBusLocation(listOfSubRoutessss.get(position).getId());
+
             }
         }
     }
@@ -424,6 +427,11 @@ public class RoutesActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ds.dispose();
+    }
 
     public void showLocationPermission(final Activity activity ){
         Intent intent = new Intent();
@@ -447,6 +455,83 @@ public class RoutesActivity extends AppCompatActivity {
         Intent intent=new Intent("android.location.GPS_ENABLED_CHANGE");
         intent.putExtra("enabled", true);
         mContext.sendBroadcast(intent);
+    }
+
+
+    private void getBusLocation(int id) {
+
+        final CustomProgressDialog progressDialog = UI.show(mContext);
+        String token = Utils.BEARER + SharedPreferencesHelper.getToken(mContext);
+        Log.e("SCHE_ID::", id + "");
+
+        apiServices.getBusLocationBySchedule(token, id).observeOn(AndroidSchedulers.mainThread()).timeout(30, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(new Observer<ResponseWrapperObject<RouteSchedule>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                ds = d;
+            }
+
+            @Override
+            public void onNext(ResponseWrapperObject<RouteSchedule> routeScheduleResponseWrapperObject) {
+                long x = System.currentTimeMillis();
+                Log.e("TXXXXX", "HIT");
+                Log.e("TXXXXX", routeScheduleResponseWrapperObject.getData()+"");
+
+                try {
+                    if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
+                        RouteSchedule route = routeScheduleResponseWrapperObject.getData();
+
+                        if (route != null && (route.getLatitude() != null || !route.getLatitude().isEmpty()) && (route.getLongitude() != null || !route.getLongitude().isEmpty())) {
+
+                            Intent intent = new Intent(mContext, MapActivity.class);
+                            Schedule schedule = listOfSubRoutessss.get(position);
+                            intent.putExtra(Utils.SCHEDULE_ID, schedule.getId());
+                            startActivity(intent);
+
+                        }else if(route != null && route.equals("[]")) {
+
+                            Utils.toast(mContext,"Today no trip is  available");
+                        }
+
+                    } else if(routeScheduleResponseWrapperObject != null && routeScheduleResponseWrapperObject.getStatus().equalsIgnoreCase("failed"))                    {
+                        Log.d(TAG, "onNext: "+routeScheduleResponseWrapperObject.getStatus());
+
+                    }else if(routeScheduleResponseWrapperObject != null && routeScheduleResponseWrapperObject.getData().equals("[]")){
+                        Utils.toast(mContext,"Today no trip is  available");
+
+                    }else{
+
+                    }
+                } catch (Exception e) {
+                    e.getStackTrace();
+                    Log.e(TAG,e.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                 progressDialog.dismissAllowingStateLoss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!isFinishing()){
+
+                        }
+                        //Utils.toast(mContext, "data Failed!");
+
+                    }
+                });
+
+                Log.d(TAG, "onError: "+e.getLocalizedMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                progressDialog.dismissAllowingStateLoss();
+                Log.d(TAG, "HITOUT");
+                // Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 

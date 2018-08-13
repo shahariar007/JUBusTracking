@@ -100,6 +100,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ArrayList<LatLng> points = null;
     PolylineOptions lineOptions = null;
     AlertDialog alert = null;
+    final int MAP_BOUND_PADDING = 180;  /* In dp */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,11 +119,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
         startIntentService();
 
-//        if (Utils.isConnected(mContext)) {
-//            getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
-//        } else {
-//            Utils.toast(mContext, getString(R.string.error_internet_connection));
-//        }
+        if (Utils.isConnected(mContext)) {
+            getBusLocation(getIntent().getExtras().getInt(Utils.SCHEDULE_ID));
+        } else {
+            Utils.toast(mContext, getString(R.string.error_internet_connection));
+        }
 
 
         //setDistanceDisplay();
@@ -418,13 +419,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
                         RouteSchedule route = routeScheduleResponseWrapperObject.getData();
 
-//                        if (route != null && (route.getLatitude() != null || !route.getLatitude().isEmpty()) && (route.getLongitude() != null || !route.getLongitude().isEmpty())) {
-//
-//                        } else {
-//
-//                        }
-
-
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
                         TempData.CURRENT_TRANSPORT_LOC = address;
@@ -552,9 +546,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-
-    final int MAP_BOUND_PADDING = 180;  /* In dp */
 
     // Draw polyline on map
     public void drawPolyLineOnMap(List<LatLng> list) {
