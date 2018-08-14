@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,14 +37,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.location.GetDataFromUrl;
 import com.hossain.ju.bus.location.GetDirections;
+import com.hossain.ju.bus.location.LocationData;
 import com.hossain.ju.bus.location.LocationListener;
 import com.hossain.ju.bus.location.LocationUpdateIntentService;
 import com.hossain.ju.bus.location.LocationUtils;
@@ -56,7 +63,12 @@ import com.hossain.ju.bus.utils.Constants;
 import com.hossain.ju.bus.utils.TempData;
 import com.hossain.ju.bus.utils.Utils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -114,6 +126,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_main);
         mContext = this;
         setUpToolbar();
+
+
         apiServices = APIClient.getInstance().create(APIServices.class);
         txtBusLocation = (TextView) findViewById(R.id.txtBusLocation);
         txtDistance = (TextView) findViewById(R.id.txtDistance);
@@ -177,6 +191,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onStart() {
         super.onStart();
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -218,6 +234,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ds != null) {
             ds.dispose();
         }
+        EventBus.getDefault().unregister(this);
 
         stopIntentService();
 
@@ -285,7 +302,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private Marker mMarkerA;
     private Marker mMarkerB;
-    float zoomLevel = (float) 15.0f;
+    float zoomLevel = (float) 16.0f;
     LatLng latLng, latLng2;
 
     @Override
@@ -417,6 +434,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(LocationData event) {
+        Toast.makeText(mContext, event.getLocation().getLatitude()+"", Toast.LENGTH_SHORT).show();
+
+        TempData.USER_LAT = event.getLocation().getLatitude();
+        TempData.USER_LONG = event.getLocation().getLongitude();
+    }
+
+
 
     /**
      * Shows a {@link Snackbar}.
@@ -445,8 +472,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
     private void updateWidget(String address, double lat, double longitude) {
-        // txtBusLocation.setText(address);
-        // Utils.toast(mContext, "LAT:" + lat + " LONG: " + longitude);
+       // Utils.toast(mContext, "LAT:" + lat + " LONG: " + longitude);
     }
 
 
@@ -472,11 +498,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onNext(ResponseWrapperObject<RouteSchedule> routeScheduleResponseWrapperObject) {
                 long x = System.currentTimeMillis();
                 Log.e("TXXXXX", "HIT");
-                txtBusLocation.setText("test");
                 try {
                     if (routeScheduleResponseWrapperObject.getStatus().contains("ok")) {
                         setLocationLayoutAnim();
                         RouteSchedule route = routeScheduleResponseWrapperObject.getData();
+
+                        Utils.toast(mContext,"LAT:"+Double.valueOf(route.getLatitude())+"LONG::" +Double.valueOf(route.getLongitude()));
 
                         String address = LocationUtils.getAddress(mContext, Double.valueOf(route.getLatitude()), Double.valueOf(route.getLongitude()));
 
@@ -504,11 +531,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         mMarkerA.setPosition(origin);
                         mMarkerB.setPosition(dest);
 
-//                        String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
-//                        GetDirections getDirections = new GetDirections(MapActivity.this);
-//                        getDirections.startGettingDirections(url);
-
-                        //progressDialog.dismissAllowingStateLoss();
                     } else if (routeScheduleResponseWrapperObject != null && routeScheduleResponseWrapperObject.getStatus().equalsIgnoreCase("failed")) {
                         Log.d(TAG, "onNext: " + routeScheduleResponseWrapperObject.getStatus());
                         txtBusLocation.setText("Bus location  not found");
@@ -519,7 +541,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     // Log.e(TAG,e.getMessage());
                 }
             }
-
 
             @Override
             public void onError(Throwable e) {
@@ -606,6 +627,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng origin = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
         mMarkerA.setPosition(origin);
         mMarkerB.setPosition(dest);
+
+//        List<LatLng> sourcePoints = new ArrayList<>();
+//        sourcePoints.add(dest);
+//        sourcePoints.add(origin);
+//
+//        PolylineOptions polyLineOptions = new PolylineOptions();
+//        polyLineOptions.addAll(sourcePoints);
+//        polyLineOptions.width(50f);
+//        polyLineOptions.color(Color.rgb(0, 178, 255));
+//        Polyline polyline = gMap.addPolyline(polyLineOptions);
+//
+//        List<PatternItem> pattern = Arrays.<PatternItem>asList(new Dot(), new Gap(10f));
+//        polyline.setPattern(pattern);
+//
+//        CameraPosition cameraPosition = new CameraPosition.Builder()
+//                .target(sourcePoints.get(2))
+//                .zoom(14)
+//                .build();
+//        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
         String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
         GetDirections getDirections = new GetDirections(MapActivity.this);
         getDirections.startGettingDirections(url);

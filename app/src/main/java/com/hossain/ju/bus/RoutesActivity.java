@@ -531,8 +531,6 @@ public class RoutesActivity extends AppCompatActivity {
                 // Toast.makeText(mContext, "Complete", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-
 
 }

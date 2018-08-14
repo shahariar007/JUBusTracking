@@ -35,6 +35,8 @@ import com.hossain.ju.bus.utils.DateUtils;
 import com.hossain.ju.bus.utils.Utils;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -138,17 +140,7 @@ public class LocationUpdateIntentService extends Service implements
         if(LocationUtils.isBetterLocation(location, mCurrentLocation,UPDATE_INTERVAL_IN_MILLISECONDS)){
             updateLocation(location);
         }
-        if(mCurrentLocation != null){
-             // checkExternalMedia();
-            // writeToSDFile(mCurrentLocation);
-            String address = LocationUtils.getAddress(this,mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
-            //Utils.toast(this,"Current address: "+ address);
-            //insertBusLocations(mCurrentLocation,(int) Utils.getBatteryLevel(this));
 
-            deliverResultToReceiver(Constants.SUCCESS_RESULT, address,mCurrentLocation);
-        }else{
-            // retry location if not found
-        }
     }
 
     @Override
@@ -302,7 +294,14 @@ public class LocationUpdateIntentService extends Service implements
 
     private void updateLocation(Location location){
         mCurrentLocation = location;
-        Log.e(TAG, "LAT:"+mCurrentLocation.getLatitude()+":: "+"Longitude:"+mCurrentLocation.getLongitude());
+
+
+        if(mCurrentLocation != null){
+
+            deliverResultToReceiver(Constants.SUCCESS_RESULT, null,mCurrentLocation);
+        }else{
+            // retry location if not found
+        }
 
     }
 
@@ -314,12 +313,19 @@ public class LocationUpdateIntentService extends Service implements
         Bundle bundle = new Bundle();
        // bundle.putString(Constants.RESULT_DATA_KEY, message);
         if(mCurrentLocation != null){
+            Log.e(TAG, "LAT:"+mCurrentLocation.getLatitude()+":: "+"Longitude:"+mCurrentLocation.getLongitude());
             bundle.putParcelable(Constants.CURRENT_LOCATION, mCurrentLocation);
+            EventBus.getDefault().post(new LocationData(mCurrentLocation));
             if(mReceiver != null){
+                Log.e(TAG, "LAT2:"+mCurrentLocation.getLatitude()+":: "+"Longitude:"+mCurrentLocation.getLongitude());
+               // Utils.toast(this,"Current mCurrentLocation: "+ mCurrentLocation.getLatitude());
                 mReceiver.send(resultCode, bundle);
             }else{
-                Log.d(TAG, "deliverResultToReceiver: "+mReceiver);
+                Log.d("ResultToReceiver:", "deliverResultToReceiver: "+" null");
+
             }
         }
     }
+
+
 }

@@ -116,7 +116,7 @@
                                 android:layout_marginRight="10dp"
                                 android:layout_toRightOf="@+id/txtLocation"
                                 android:padding="3dp"
-                                android:text=""
+                                android:text="000"
                                 android:textColor="@color/myTextPrimaryColor"
                                 android:textSize="14sp" />
 
