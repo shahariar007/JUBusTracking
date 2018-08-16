@@ -120,6 +120,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     FloatingActionButton location, direction;
     LinearLayout bottomLayout;
+    private String finalDistance;
+    String finalDuration;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -397,13 +400,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 for(int i=0;i<result.size();i++) {
                     points = new ArrayList<LatLng>();
                     lineOptions = new PolylineOptions();
-
+//                    Log.d(TAG, "run: "+path.size());
                     // Fetching all the points in i-th route
                     for (int j = 0; j < path.size(); j++) {
                         HashMap<String, String> point = path.get(j);
-
-                        if (j == 0) {    // Get distance from the list
+                        if (j == 0) {
+                            // Get distance from the list
                             distance = (String) point.get("distance");
+
                             continue;
                         } else if (j == 1) { // Get duration from the list
                             duration = (String) point.get("duration");
@@ -424,9 +428,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 }
 
-                txtDistance.setText(distance + " ("+duration +" )");
-
-                gMap.addPolyline(lineOptions);
+                final PolylineOptions finalLineOptions = lineOptions;
+              finalDistance = distance;
+              finalDuration = duration;
+                runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+            gMap.addPolyline(finalLineOptions);
+            try {
+                txtDistance.setText(String.format("%s (%s )", finalDistance, finalDuration));
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    });
 
 
             }
