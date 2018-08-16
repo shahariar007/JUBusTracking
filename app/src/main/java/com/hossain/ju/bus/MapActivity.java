@@ -1,7 +1,6 @@
 package com.hossain.ju.bus;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,15 +37,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Dot;
-import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.hossain.ju.bus.helper.SharedPreferencesHelper;
 import com.hossain.ju.bus.location.GetDataFromUrl;
@@ -69,7 +63,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +97,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private APIServices apiServices;
 
-    private TextView txtBusLocation, txtDistance;
+    private TextView txtBusLocation, txtTimeDistance;
     private GoogleMap gMap;
     Disposable ds;
 
@@ -134,7 +127,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         apiServices = APIClient.getInstance().create(APIServices.class);
         txtBusLocation = (TextView) findViewById(R.id.txtBusLocation);
-        txtDistance = (TextView) findViewById(R.id.txtDistance);
+        txtTimeDistance = (TextView) findViewById(R.id.txtDistance);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         location = (FloatingActionButton) findViewById(R.id.myLocation);
         direction = (FloatingActionButton) findViewById(R.id.direction);
@@ -341,7 +334,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
         gMap.setMyLocationEnabled(true);
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        gMap.getUiSettings().setZoomControlsEnabled(true);
+        gMap.getUiSettings().setZoomControlsEnabled(false);
         gMap.getUiSettings().setAllGesturesEnabled(true);
 
     }
@@ -377,23 +370,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     return;
                 }
 
-//                for (List<HashMap<String, String>> path : result) {
-//                    points = new ArrayList<LatLng>();
-//                    lineOptions = new PolylineOptions();
-//                    // Get all the points for this route
-//                    for (HashMap<String, String> point : path) {
-//                        double lat = Double.parseDouble(point.get("lat"));
-//                        double lng = Double.parseDouble(point.get("lng"));
-//                        LatLng position = new LatLng(lat, lng);
-//                        points.add(position);
-//                    }
-//
-//                    // Adding all the points in the route to LineOptions
-//                    lineOptions.addAll(points);
-//                    lineOptions.width(5);
-//                    lineOptions.color(Color.RED);
-//                }
-
                 // Fetching i-th route
                 List<HashMap<String, String>> path = result.get(i);
                 // Traversing through all the routes
@@ -417,7 +393,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         double lat = Double.parseDouble(point.get("lat"));
                         double lng = Double.parseDouble(point.get("lng"));
                         LatLng position = new LatLng(lat, lng);
-
                         points.add(position);
                     }
 
@@ -425,30 +400,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     lineOptions.addAll(points);
                     lineOptions.width(2);
                     lineOptions.color(Color.RED);
-
                 }
 
                 final PolylineOptions finalLineOptions = lineOptions;
-              finalDistance = distance;
-              finalDuration = duration;
+                finalDistance = distance;
+                finalDuration = duration;
                 runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-            gMap.addPolyline(finalLineOptions);
-            try {
-                txtDistance.setText(String.format("%s (%s )", finalDistance, finalDuration));
-            }catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    });
-
-
+                    @Override
+                    public void run() {
+                        gMap.addPolyline(finalLineOptions);
+                        try {
+                           // String fDistance = getFormatDistance(Double.valueOf(finalDistance));
+                          //  Log.e("fDistance", fDistance+"" );
+                            txtTimeDistance.setText(String.format("%s (%s )",finalDuration ,finalDistance));
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                 });
             }
         }).start();
-
     }
+
 
 
     /**
@@ -471,9 +445,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (resultData == null) {
                 return;
             }
-
             // mAddressOutput      = resultData.getString(Constants.RESULT_DATA_KEY);
-
             Location location = resultData.getParcelable(Constants.CURRENT_LOCATION);
 
             TempData.USER_LAT = location.getLatitude();
@@ -484,7 +456,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (resultCode == Constants.SUCCESS_RESULT) {
                 //  Utils.toast(mContext, getString(R.string.address_found));
 
-                //txtDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE))));
+                //txtTimeDistance.setText("" + Utils.round(Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE))));
             }
         }
     }
@@ -571,7 +543,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         Log.e(TAG, "DIStance::" + distance);
                         formatDistance(distance);
 
-
                         // Getting URL to the Google Directions API
 
                         LatLng dest = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
@@ -588,8 +559,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         mMarkerB.setPosition(dest);
 
                     } else if (routeScheduleResponseWrapperObject != null && routeScheduleResponseWrapperObject.getStatus().equalsIgnoreCase("failed")) {
-                        Log.d(TAG, "onNext: " + routeScheduleResponseWrapperObject.getStatus());
-                        txtBusLocation.setText("Bus location  not found");
+                        //Log.d(TAG, "onNext: " + routeScheduleResponseWrapperObject.getStatus());
+                        txtBusLocation.setText("Bus location  not found!");
                     }
                 } catch (Exception e) {
                     e.getStackTrace();
@@ -645,7 +616,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //
 //                        double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE));
 //                        Log.e(TAG, "DIStance::" + distance);
-//                        txtDistance.setText("" + Utils.round(distance));
+//                        txtTimeDistance.setText("" + Utils.round(distance));
 //
 //
 //                        mapFragment.getMapAsync((OnMapReadyCallback) mContext);
@@ -680,12 +651,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void formatDistance(double distance) {
         if(distance >= 1.0 ){
-            txtDistance.setText(String.format("%s km", Utils.round(distance)));
+            txtTimeDistance.setText(String.format("%s km", Math.floor((distance))));
         }else{
-            txtDistance.setText("" + Utils.round(distance*1000) + " m");
+            txtTimeDistance.setText("" + Math.floor(distance * 1000) + " m");
         }
+    }
 
+    private  String getFormatDistance(double distance) {
 
+        if(distance >= 1.0 ){
+            return Utils.round(distance);
+
+        }else{
+            return Utils.round(distance*1000) ;
+
+        }
     }
 
     public void getDirection() throws Exception {
@@ -693,26 +673,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng origin = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
         mMarkerA.setPosition(origin);
         mMarkerB.setPosition(dest);
-
-//        List<LatLng> sourcePoints = new ArrayList<>();
-//        sourcePoints.add(dest);
-//        sourcePoints.add(origin);
-//
-//        PolylineOptions polyLineOptions = new PolylineOptions();
-//        polyLineOptions.addAll(sourcePoints);
-//        polyLineOptions.width(50f);
-//        polyLineOptions.color(Color.rgb(0, 178, 255));
-//        Polyline polyline = gMap.addPolyline(polyLineOptions);
-//
-//        List<PatternItem> pattern = Arrays.<PatternItem>asList(new Dot(), new Gap(10f));
-//        polyline.setPattern(pattern);
-//
-//        CameraPosition cameraPosition = new CameraPosition.Builder()
-//                .target(sourcePoints.get(2))
-//                .zoom(14)
-//                .build();
-//        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
 
         String url = GetDataFromUrl.getDirectionsUrl(origin, dest);
         GetDirections getDirections = new GetDirections(MapActivity.this);

@@ -430,7 +430,7 @@ public class RoutesActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ds.dispose();
+        if(ds!= null)ds.dispose();
     }
 
     public void showLocationPermission(final Activity activity ){
