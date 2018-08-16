@@ -1,6 +1,7 @@
 package com.hossain.ju.bus;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -125,7 +126,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        setUpToolbar();
+     //  setUpToolbar();
 
 
         apiServices = APIClient.getInstance().create(APIServices.class);
@@ -247,10 +248,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ds != null)
             ds.dispose();
     }
-    int k=0;
+    int k = 0;
     public void setLocationLayoutAnim()
     {
-        if(k>0) return;
+        if(k > 0) return;
         if(isFinishing()) return;
         Animation animationUtils= AnimationUtils.loadAnimation(this,R.anim.layout_anim_b_to_t);
         bottomLayout.startAnimation(animationUtils);
@@ -362,33 +363,71 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void run() {
 
+                ArrayList<LatLng> points = null;
+                 PolylineOptions lineOptions = null;
                 MarkerOptions markerOptions = new MarkerOptions();
+                String distance = "";
+                String duration = "";
 
-                for (List<HashMap<String, String>> path : result) {
+                if(result.size()<1){
+                    Toast.makeText(getBaseContext(), "No Points", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+//                for (List<HashMap<String, String>> path : result) {
+//                    points = new ArrayList<LatLng>();
+//                    lineOptions = new PolylineOptions();
+//                    // Get all the points for this route
+//                    for (HashMap<String, String> point : path) {
+//                        double lat = Double.parseDouble(point.get("lat"));
+//                        double lng = Double.parseDouble(point.get("lng"));
+//                        LatLng position = new LatLng(lat, lng);
+//                        points.add(position);
+//                    }
+//
+//                    // Adding all the points in the route to LineOptions
+//                    lineOptions.addAll(points);
+//                    lineOptions.width(5);
+//                    lineOptions.color(Color.RED);
+//                }
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+                // Traversing through all the routes
+                for(int i=0;i<result.size();i++) {
                     points = new ArrayList<LatLng>();
                     lineOptions = new PolylineOptions();
-                    // Get all the points for this route
-                    for (HashMap<String, String> point : path) {
+
+                    // Fetching all the points in i-th route
+                    for (int j = 0; j < path.size(); j++) {
+                        HashMap<String, String> point = path.get(j);
+
+                        if (j == 0) {    // Get distance from the list
+                            distance = (String) point.get("distance");
+                            continue;
+                        } else if (j == 1) { // Get duration from the list
+                            duration = (String) point.get("duration");
+                            continue;
+                        }
+
                         double lat = Double.parseDouble(point.get("lat"));
                         double lng = Double.parseDouble(point.get("lng"));
                         LatLng position = new LatLng(lat, lng);
+
                         points.add(position);
                     }
 
                     // Adding all the points in the route to LineOptions
                     lineOptions.addAll(points);
-                    lineOptions.width(5);
+                    lineOptions.width(2);
                     lineOptions.color(Color.RED);
+
                 }
 
-                //Do all UI operations on the UI thread only...
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Drawing polyline in the Google Map for the this route
-                        gMap.addPolyline(lineOptions);
-                    }
-                });
+                txtDistance.setText(distance + " ("+duration +" )");
+
+                gMap.addPolyline(lineOptions);
+
 
             }
         }).start();
@@ -514,7 +553,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         double distance = Utils.calculationByDistance(new LatLng(TempData.USER_LAT, TempData.USER_LONG), new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE));
                         Log.e(TAG, "DIStance::" + distance);
-                        txtDistance.setText("" + Utils.round(distance) + " Km");
+                        formatDistance(distance);
+
 
                         // Getting URL to the Google Directions API
 
@@ -622,6 +662,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    private void formatDistance(double distance) {
+        if(distance >= 1.0 ){
+            txtDistance.setText(String.format("%s km", Utils.round(distance)));
+        }else{
+            txtDistance.setText("" + Utils.round(distance*1000) + " m");
+        }
+
+
+    }
+
     public void getDirection() throws Exception {
         LatLng dest = new LatLng(TempData.USER_LAT, TempData.USER_LONG);
         LatLng origin = new LatLng(TempData.TRANSPORT_LATITUDE, TempData.TRANSPORT_LONGITUDE);
@@ -657,6 +707,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().hide();
     }
 
     // Draw polyline on map

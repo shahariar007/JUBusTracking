@@ -6,19 +6,7 @@
     android:background="@android:color/background_light"
     android:fitsSystemWindows="true">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,7 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|end"
-                        android:layout_marginBottom="3dp"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginTop="140dp"
                         android:background="@color/White"
                         android:orientation="vertical"
@@ -87,7 +75,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
-                            android:padding="3dp">
+                            android:padding="3dp"
+                            android:layout_gravity="center">
 
                             <View
                                 android:id="@+id/dummy"
@@ -103,7 +92,7 @@
                                 android:layout_alignRight="@id/dummy"
                                 android:gravity="left"
                                 android:padding="3dp"
-                                android:text="Distance Away: "
+                                android:text="@string/time_distance"
                                 android:textColor="@color/accentColor"
                                 android:textSize="20sp" />
 
@@ -116,7 +105,7 @@
                                 android:layout_marginRight="10dp"
                                 android:layout_toRightOf="@+id/txtLocation"
                                 android:padding="3dp"
-                                android:text="000"
+                                android:text="0 min (1.0 km)"
                                 android:textColor="@color/myTextPrimaryColor"
                                 android:textSize="14sp" />
 

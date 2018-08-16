@@ -21,6 +21,7 @@ public class RoutesJsonParser {
         JSONArray jRoutes = null;
         JSONArray jLegs = null;
         JSONArray jSteps = null;
+        JSONObject jDuration = null;
 
         try {
 
@@ -34,6 +35,13 @@ public class RoutesJsonParser {
                 /** Traversing all legs */
                 for (int j = 0; j < jLegs.length(); j++) {
                     jSteps = ((JSONObject) jLegs.get(j)).getJSONArray("steps");
+
+                    /** Getting duration from the json data */
+                    jDuration = ((JSONObject) jLegs.get(j)).getJSONObject("duration");
+                    HashMap<String, String> hmDuration = new HashMap<String, String>();
+                    hmDuration.put("duration", jDuration.getString("text"));
+
+                    path.add(hmDuration);
 
                     /** Traversing all steps */
                     for (int k = 0; k < jSteps.length(); k++) {
@@ -49,6 +57,7 @@ public class RoutesJsonParser {
                             path.add(hm);
                         }
                     }
+
                     routes.add(path);
                 }
             }

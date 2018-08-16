@@ -51,6 +51,9 @@
     <string name="password_max_length">20</string>
     <string name="No.events.found">No.events.found</string>
 
+    <string name="time_distance">Time &amp; Distance :"</string>
+
+
 
     <string name="record_available_msg">No record is available</string>
 
